@@ -42,9 +42,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [authorizedEmails, setAuthorizedEmails] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('crunqi_authorized_emails');
-      return saved ? JSON.parse(saved) : ['heidy.saratxaga@gmail.com', 'admin.crunqi@gmail.com'];
+      return saved ? JSON.parse(saved) : ['heidy.saratxaga@gmail.com', 'mgregoriomartinez@gmail.com'];
     } catch {
-      return ['heidy.saratxaga@gmail.com', 'admin.crunqi@gmail.com'];
+      return ['heidy.saratxaga@gmail.com', 'mgregoriomartinez@gmail.com'];
     }
   });
 
@@ -252,15 +252,15 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   </button>
 
                   <button
-                    onClick={() => handleGoogleSignIn('admin.crunqi@gmail.com')}
+                    onClick={() => handleGoogleSignIn('mgregoriomartinez@gmail.com')}
                     className="w-full bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-3.5 flex items-center gap-3 transition-all hover:border-[#39c0d3] shadow-xs cursor-pointer"
                   >
                     <div className="w-8 h-8 rounded-full bg-[#39c0d3]/10 text-[#39c0d3] flex items-center justify-center font-bold text-sm">
-                      A
+                      M
                     </div>
                     <div className="flex-1">
-                      <span className="font-bold text-xs text-[#26170c] block">Administrador General</span>
-                      <span className="text-[10px] text-[#81756e] block">admin.crunqi@gmail.com</span>
+                      <span className="font-bold text-xs text-[#26170c] block">Gregorio Martínez</span>
+                      <span className="text-[10px] text-[#81756e] block">mgregoriomartinez@gmail.com</span>
                     </div>
                   </button>
 
@@ -1039,7 +1039,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         {authorizedEmails.map(email => (
                           <div key={email} className="flex items-center justify-between bg-[#fdf9f3] px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold">
                             <span className="font-mono text-[#26170c]">{email}</span>
-                            {email !== 'admin.crunqi@gmail.com' && (
+                            {email !== 'mgregoriomartinez@gmail.com' && (
                               <button
                                 type="button"
                                 onClick={() => {
