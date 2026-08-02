@@ -55,8 +55,16 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                 style={{ backgroundImage: `url('${flavor.image}')` }}
               />
 
+              {flavor.stock !== undefined && flavor.stock <= 0 && (
+                <div className="absolute inset-0 bg-black/45 backdrop-blur-[2px] flex items-center justify-center z-10">
+                  <span className="text-white text-lg font-serif font-bold uppercase tracking-widest border-2 border-white px-4 py-1.5 rounded-lg shadow-lg">
+                    {language === 'es' ? 'Agotado' : 'Sold Out'}
+                  </span>
+                </div>
+              )}
+
               {/* Badges Overlay */}
-              <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
+              <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none z-10">
                 {flavor.badge ? (
                   <span className="bg-[#d61219] text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm">
                     {flavor.badge}
@@ -76,7 +84,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
               </div>
 
               {/* Price Tag */}
-              <div className="absolute bottom-4 right-4 bg-[#26170c]/90 text-white backdrop-blur-md px-3.5 py-1 rounded-full font-serif font-bold text-sm shadow-md">
+              <div className="absolute bottom-4 right-4 bg-[#26170c]/90 text-white backdrop-blur-md px-3.5 py-1 rounded-full font-serif font-bold text-sm shadow-md z-10">
                 ${flavor.price.toFixed(2)}
               </div>
             </div>
@@ -117,10 +125,15 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
               {/* Action Buttons */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto">
                 <a
-                  href={whatsappUrl}
+                  href={flavor.stock !== undefined && flavor.stock <= 0 ? '#' : whatsappUrl}
+                  onClick={(e) => flavor.stock !== undefined && flavor.stock <= 0 && e.preventDefault()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full bg-[#26170c] text-white py-3.5 rounded-2xl font-semibold text-xs text-center hover:bg-[#d61219] transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                  className={`w-full py-3.5 rounded-2xl font-semibold text-xs text-center flex items-center justify-center gap-1.5 shadow-sm transition-colors ${
+                    flavor.stock !== undefined && flavor.stock <= 0
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
+                      : 'bg-[#26170c] text-white hover:bg-[#d61219]'
+                  }`}
                 >
                   <span className="material-symbols-outlined text-[16px]">chat</span>
                   <span>{language === 'es' ? 'Pedir por WhatsApp' : 'Order This Flavor'}</span>
@@ -128,10 +141,17 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
 
                 <button
                   onClick={() => onAddToCart(flavor)}
-                  className="w-full bg-white text-[#26170c] border border-[#39c0d3]/40 py-3.5 rounded-2xl font-semibold text-xs text-center hover:bg-[#39c0d3] hover:text-white transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                  disabled={flavor.stock !== undefined && flavor.stock <= 0}
+                  className={`w-full py-3.5 rounded-2xl font-semibold text-xs text-center flex items-center justify-center gap-1.5 shadow-xs transition-colors ${
+                    flavor.stock !== undefined && flavor.stock <= 0
+                      ? 'bg-gray-150 text-gray-400 border border-gray-200 cursor-not-allowed'
+                      : 'bg-white text-[#26170c] border border-[#39c0d3]/40 hover:bg-[#39c0d3] hover:text-white'
+                  }`}
                 >
-                  <span className="material-symbols-outlined text-[16px]">add_shopping_cart</span>
-                  <span>{t('products.btnAdd')}</span>
+                  <span className="material-symbols-outlined text-[16px]">
+                    {flavor.stock !== undefined && flavor.stock <= 0 ? 'block' : 'add_shopping_cart'}
+                  </span>
+                  <span>{flavor.stock !== undefined && flavor.stock <= 0 ? (language === 'es' ? 'Agotado' : 'Sold Out') : t('products.btnAdd')}</span>
                 </button>
               </div>
 

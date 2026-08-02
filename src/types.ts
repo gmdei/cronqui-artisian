@@ -15,6 +15,7 @@ export interface SpoonableFlavor {
   calories?: number;
   rating: number;
   reviewsCount: number;
+  stock?: number; // Stock/inventory available
 }
 
 export interface CartItem {

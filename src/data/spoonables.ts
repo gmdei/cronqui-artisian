@@ -51,7 +51,8 @@ export const SPOONABLES_FLAVORS: SpoonableFlavor[] = [
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxo3zAuTOcfsSataHEVO0imunoM6gQyPsJ9Xn-EDC2vYI7NTXsaQKK4Eeir1na7O2HxrUF8jO5Y90uAMg2Au0WqEZjJ6rPacu4YiX-urVrqO1tgpNcBwf6E4KvVQVcRxR9T2saMtYYbxPA0u-fLNWX1cLZtzqW4NcEe30doKjYyJ_CCfOsZgTD9KVGaQ_Mlk3SboLJCNuwtG79GlzDkEA0GoBLSThxgQXYbRI0NGLxxE4b5xoSUPHh',
     calories: 340,
     rating: 4.9,
-    reviewsCount: 128
+    reviewsCount: 128,
+    stock: 12
   },
   {
     id: 'sunshine-bliss',
@@ -74,7 +75,8 @@ export const SPOONABLES_FLAVORS: SpoonableFlavor[] = [
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCvtb_Km--Kh2TM1tr12hrGxYH9Yu-e7Ic1uOBz3yoeA9mvjw-9In-z8-Q6uI7mP3d7LAAOt0_cEtojlXcT282ItnmVtxKEaMa7W5IwMXHRlNsl-LJYoHEEv5iaQz9A39q0fgpRugyPigb6VEKzkVnkdD3nT3RqrqTEtg7M1qB-0kmLadWY_85ZG11I6m9JRkeXv7l6oq7KhDB5ISMESqowiSSK0yj8rkguXzy0L2BIB70exQkpJ_dv',
     calories: 320,
     rating: 4.8,
-    reviewsCount: 94
+    reviewsCount: 94,
+    stock: 12
   },
   {
     id: 'autumn-caramel',
@@ -97,7 +99,8 @@ export const SPOONABLES_FLAVORS: SpoonableFlavor[] = [
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAmcsU5LRLm0PUWoFzvBmXXIOy9JF9LOH-iWRfUE7Kb22ti9CLyQ03ZtPENrrhiiHEudLJXpaXwf2XBYWCTcGWs35wcYzMUSejDlBIrGyF2EqDcJd0S1paZBYtaTBd7vKwUAELQB3ysohrp5jbb17z3I9RdlvJ8z9VHx5essj0LdQiUFTks2wBgfADxTj6zgHpEp5MMwIb-jafOPkyCXc-XNuJVqi2pbzwUVUkB50XU0Mj3F9m7hdG5',
     calories: 380,
     rating: 4.9,
-    reviewsCount: 112
+    reviewsCount: 112,
+    stock: 12
   },
   {
     id: 'pistachio-raspberry-royale',
@@ -121,7 +124,8 @@ export const SPOONABLES_FLAVORS: SpoonableFlavor[] = [
     image: HERO_IMAGES.pistachioRaspberry,
     calories: 390,
     rating: 5.0,
-    reviewsCount: 165
+    reviewsCount: 165,
+    stock: 12
   },
   {
     id: 'midnight-praline',
@@ -144,7 +148,8 @@ export const SPOONABLES_FLAVORS: SpoonableFlavor[] = [
     image: HERO_IMAGES.chocolateTopView,
     calories: 410,
     rating: 4.9,
-    reviewsCount: 88
+    reviewsCount: 88,
+    stock: 12
   }
 ];
 

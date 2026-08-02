@@ -529,15 +529,37 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   {/* Hero Banner Manager */}
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-[#26170c] block">
-                      3. Imagen de Banner / Portada (URL)
+                      3. Imagen de Banner / Portada (URL o Subir)
                     </label>
-                    <input
-                      type="text"
-                      value={themeSettings.heroBannerImage || ''}
-                      onChange={(e) => onUpdateThemeSettings({ ...themeSettings, heroBannerImage: e.target.value })}
-                      placeholder="Ej. https://images.unsplash.com/photo-1579372786545-d24232daf58c"
-                      className="w-full bg-white border border-[#39c0d3]/30 rounded-xl p-3 text-xs text-[#1c1c18] focus:ring-2 focus:ring-[#39c0d3] outline-none"
-                    />
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        value={themeSettings.heroBannerImage || ''}
+                        onChange={(e) => onUpdateThemeSettings({ ...themeSettings, heroBannerImage: e.target.value })}
+                        placeholder="Ej. https://images.unsplash.com/photo-1579372786545-d24232daf58c"
+                        className="flex-1 bg-white border border-[#39c0d3]/30 rounded-xl p-3 text-xs text-[#1c1c18] focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                      />
+                      <label className="bg-[#26170c] hover:bg-[#39c0d3] hover:text-[#26170c] text-white px-4 py-3 rounded-xl text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0">
+                        <span className="material-symbols-outlined text-[16px]">upload</span>
+                        <span>Subir Banner</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                const dataUrl = event.target?.result as string;
+                                onUpdateThemeSettings({ ...themeSettings, heroBannerImage: dataUrl });
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   {/* Heidi Saratxaga Photo Manager */}
@@ -651,14 +673,78 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       />
                     </div>
 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-1">Etiqueta Destacada (Badge)</label>
+                        <div className="flex gap-2">
+                          <select
+                            onChange={(e) => {
+                              if (e.target.value !== 'custom') {
+                                setNewProduct({ ...newProduct, badge: e.target.value });
+                              }
+                            }}
+                            className="bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-xl p-2 text-xs focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                          >
+                            <option value="">Sin etiqueta</option>
+                            <option value="Bestseller">Bestseller</option>
+                            <option value="En Oferta">En Oferta</option>
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Edición Especial">Edición Especial</option>
+                            <option value="custom">-- Personalizada --</option>
+                          </select>
+                          <input
+                            type="text"
+                            value={newProduct.badge || ''}
+                            onChange={(e) => setNewProduct({ ...newProduct, badge: e.target.value })}
+                            placeholder="Etiqueta..."
+                            className="flex-1 bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-xl p-2 text-xs focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-1">Inventario / Stock Inicial</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={newProduct.stock || 12}
+                          onChange={(e) => setNewProduct({ ...newProduct, stock: parseInt(e.target.value) || 0 })}
+                          className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-xl p-2 text-xs focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                        />
+                      </div>
+                    </div>
+
                     <div>
-                      <label className="text-[10px] font-bold uppercase text-[#81756e]">URL Fotografía del Producto</label>
-                      <input
-                        type="text"
-                        value={newProduct.image || ''}
-                        onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                        className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-[#39c0d3] outline-none"
-                      />
+                      <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-1">Fotografía del Producto</label>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="text"
+                          value={newProduct.image || ''}
+                          onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
+                          placeholder="URL de la imagen o sube un archivo..."
+                          className="flex-1 bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                        />
+                        <label className="bg-[#26170c] hover:bg-[#39c0d3] hover:text-[#26170c] text-white px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shrink-0">
+                          <span className="material-symbols-outlined text-[16px]">upload</span>
+                          <span>Subir Imagen</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                  const dataUrl = event.target?.result as string;
+                                  setNewProduct({ ...newProduct, image: dataUrl });
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                     </div>
 
                     <button
@@ -704,6 +790,81 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                                 />
                               </div>
                             </div>
+                            
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-0.5">Etiqueta Destacada (Badge)</label>
+                                <div className="flex gap-2">
+                                  <select
+                                    value={['Bestseller', 'En Oferta', 'Nuevo', 'Edición Especial', ''].includes(editProductState.badge || '') ? editProductState.badge || '' : 'custom'}
+                                    onChange={(e) => {
+                                      if (e.target.value !== 'custom') {
+                                        setEditProductState({ ...editProductState, badge: e.target.value });
+                                      }
+                                    }}
+                                    className="bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-lg p-1.5 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                                  >
+                                    <option value="">Sin etiqueta</option>
+                                    <option value="Bestseller">Bestseller</option>
+                                    <option value="En Oferta">En Oferta</option>
+                                    <option value="Nuevo">Nuevo</option>
+                                    <option value="Edición Especial">Edición Especial</option>
+                                    <option value="custom">-- Personalizada --</option>
+                                  </select>
+                                  <input 
+                                    type="text"
+                                    value={editProductState.badge || ''}
+                                    onChange={(e) => setEditProductState({ ...editProductState, badge: e.target.value })}
+                                    placeholder="Etiqueta..."
+                                    className="flex-1 bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-lg p-1.5 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-0.5">Inventario / Stock</label>
+                                <input 
+                                  type="number"
+                                  min="0"
+                                  value={editProductState.stock || 0}
+                                  onChange={(e) => setEditProductState({ ...editProductState, stock: parseInt(e.target.value) || 0 })}
+                                  className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-lg p-2 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                                />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-0.5">Fotografía del Producto</label>
+                              <div className="flex gap-2 items-center">
+                                <input 
+                                  type="text"
+                                  value={editProductState.image || ''}
+                                  onChange={(e) => setEditProductState({ ...editProductState, image: e.target.value })}
+                                  placeholder="URL o sube un archivo..."
+                                  className="flex-1 bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-lg p-2 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                                />
+                                <label className="bg-[#26170c] hover:bg-[#39c0d3] hover:text-[#26170c] text-white px-3 py-2 rounded-lg text-xs font-bold cursor-pointer transition-colors flex items-center gap-1 shrink-0">
+                                  <span className="material-symbols-outlined text-[16px]">upload</span>
+                                  <span>Subir</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = (event) => {
+                                          const dataUrl = event.target?.result as string;
+                                          setEditProductState({ ...editProductState, image: dataUrl });
+                                        };
+                                        reader.readAsDataURL(file);
+                                      }
+                                    }}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                            </div>
+
                             <div>
                               <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-0.5">Descripción</label>
                               <input 
@@ -929,11 +1090,13 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               {activeTab === 'batch' && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="border-b border-[#39c0d3]/20 pb-3">
-                    <h4 className="text-base font-serif font-bold text-[#26170c]">Módulo 4: Control de Lote Activo</h4>
-                    <p className="text-xs text-[#81756e]">Monitorea la producción diaria y el stock disponible de frascos.</p>
+                    <h4 className="text-base font-serif font-bold text-[#26170c]">Módulo 4: Lote de Cocina & Inventario</h4>
+                    <p className="text-xs text-[#81756e]">Monitorea los lotes de producción y administra la existencia disponible (stock) de cada sabor.</p>
                   </div>
 
+                  {/* Batch Details Card */}
                   <div className="bg-[#f7f3ed] p-5 rounded-2xl border border-[#39c0d3]/30 space-y-4">
+                    <h5 className="text-xs font-bold uppercase text-[#26170c] tracking-wider mb-2">Información del Lote Activo</h5>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                       <div>
                         <span className="text-[#81756e] block text-[10px] font-bold uppercase">ID Lote:</span>
@@ -963,7 +1126,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         />
                       </div>
                       <div>
-                        <span className="text-[#81756e] block text-[10px] font-bold uppercase">Stock Frascos:</span>
+                        <span className="text-[#81756e] block text-[10px] font-bold uppercase">Stock Total Frascos:</span>
                         <input
                           type="number"
                           value={batch.jarsAvailable}
@@ -971,6 +1134,53 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                           className="w-full bg-white border border-[#39c0d3]/20 rounded-lg p-2 font-bold text-[#d61219]"
                         />
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Stock Management Table */}
+                  <div className="bg-white p-5 rounded-2xl border border-[#39c0d3]/30 space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h5 className="text-xs font-bold uppercase text-[#26170c] tracking-wider">Control de Stock por Sabor</h5>
+                      <span className="text-[10px] bg-[#39c0d3]/20 text-[#26170c] font-bold px-2.5 py-1 rounded-full uppercase">
+                        Inventario Activo
+                      </span>
+                    </div>
+
+                    <div className="space-y-2.5 max-h-[250px] overflow-y-auto pr-1">
+                      {flavors.map((flavor) => (
+                        <div key={flavor.id} className="flex items-center justify-between p-3 bg-[#fdf9f3] rounded-xl border border-gray-150 text-xs">
+                          <div className="flex items-center gap-3">
+                            <img src={flavor.image} alt={flavor.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                            <div>
+                              <span className="font-serif font-bold text-[#26170c] text-sm block">{flavor.name}</span>
+                              <span className="text-[10px] text-[#81756e] uppercase font-semibold">Categoría: {flavor.category}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-bold text-[#81756e] uppercase">Cantidad:</span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={flavor.stock !== undefined ? flavor.stock : 12}
+                              onChange={(e) => {
+                                const val = parseInt(e.target.value);
+                                const updated = flavors.map(f => f.id === flavor.id ? { ...f, stock: isNaN(val) ? 0 : val } : f);
+                                onUpdateFlavors(updated);
+                              }}
+                              className="w-20 bg-white border border-[#39c0d3]/30 rounded-lg p-1.5 font-bold text-center text-[#26170c] outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                            />
+                            {(flavor.stock !== undefined ? flavor.stock : 12) <= 0 ? (
+                              <span className="bg-[#d61219]/10 text-[#d61219] text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">
+                                Agotado
+                              </span>
+                            ) : (
+                              <span className="bg-emerald-100 text-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">
+                                En Stock
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
