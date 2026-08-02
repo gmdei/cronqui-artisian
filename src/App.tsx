@@ -205,6 +205,8 @@ export default function App() {
         onOpenAdmin={() => setAdminOpen(true)}
         onOpenCustomizer={() => setCustomizerOpen(true)}
         whatsappNumber={themeSettings.whatsappNumber}
+        instagramUrl={themeSettings.instagramUrl}
+        facebookUrl={themeSettings.facebookUrl}
       />
 
       {/* Detail Modal */}

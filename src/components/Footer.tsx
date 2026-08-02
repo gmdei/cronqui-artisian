@@ -6,12 +6,16 @@ interface FooterProps {
   onOpenAdmin: () => void;
   onOpenCustomizer: () => void;
   whatsappNumber?: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenAdmin,
   onOpenCustomizer,
-  whatsappNumber = "+15551234567"
+  whatsappNumber = "+15551234567",
+  instagramUrl = "https://instagram.com/crunqi",
+  facebookUrl = "https://facebook.com/crunqi"
 }) => {
   const { language, t } = useLanguage();
   const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
@@ -46,15 +50,28 @@ export const Footer: React.FC<FooterProps> = ({
             >
               <span className="material-symbols-outlined text-[20px]">chat</span>
             </a>
-            <a 
-              href="https://instagram.com" 
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#4f453f] hover:text-[#39c0d3] shadow-xs transition-colors"
-            >
-              <span className="material-symbols-outlined text-[20px]">photo_camera</span>
-            </a>
+            {instagramUrl && (
+              <a 
+                href={instagramUrl} 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#4f453f] hover:text-[#39c0d3] shadow-xs transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">photo_camera</span>
+              </a>
+            )}
+            {facebookUrl && (
+              <a 
+                href={facebookUrl} 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#4f453f] hover:text-[#39c0d3] shadow-xs transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">public</span>
+              </a>
+            )}
             <a 
               href="#share" 
               onClick={(e) => {

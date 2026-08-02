@@ -42,6 +42,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   // Editing product state
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editProductState, setEditProductState] = useState<Partial<SpoonableFlavor>>({});
+
+  const handleStartEdit = (flavor: SpoonableFlavor) => {
+    setEditingId(flavor.id);
+    setEditProductState(flavor);
+  };
+
+  const handleSaveEdit = (id: string) => {
+    if (!editProductState.name || !editProductState.price) return;
+    const updated = flavors.map(f => f.id === id ? { ...f, ...editProductState } : f);
+    onUpdateFlavors(updated);
+    setEditingId(null);
+    setEditProductState({});
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -197,7 +211,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 }`}
               >
                 <span className="material-symbols-outlined text-[16px]">chat</span>
-                <span>3. Config WhatsApp</span>
+                <span>3. WhatsApp y Redes</span>
               </button>
 
               <button
@@ -433,47 +447,109 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
                     <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
                       {flavors.map((flavor) => (
-                        <div 
-                          key={flavor.id}
-                          className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-[#39c0d3]/20 text-xs shadow-xs"
-                        >
-                          <div className="flex items-center gap-3">
-                            <img src={flavor.image} alt={flavor.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-serif font-bold text-[#26170c] text-sm">{flavor.name}</span>
-                                {flavor.isBestseller && (
-                                  <span className="bg-[#d61219] text-white text-[9px] font-bold px-1.5 py-0.2 rounded uppercase">
-                                    ★ Bestseller
-                                  </span>
-                                )}
+                        editingId === flavor.id ? (
+                          <div 
+                            key={flavor.id}
+                            className="p-3.5 bg-white rounded-2xl border border-[#39c0d3] text-xs shadow-md space-y-3"
+                          >
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-0.5">Nombre del Producto</label>
+                                <input 
+                                  type="text"
+                                  value={editProductState.name || ''}
+                                  onChange={(e) => setEditProductState({ ...editProductState, name: e.target.value })}
+                                  className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-lg p-2 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                                />
                               </div>
-                              <span className="text-[11px] font-bold text-[#39c0d3]">${flavor.price.toFixed(2)}</span>
-                              <span className="text-[10px] text-[#81756e] block truncate max-w-xs">{flavor.description}</span>
+                              <div>
+                                <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-0.5">Precio ($ USD)</label>
+                                <input 
+                                  type="number"
+                                  step="0.05"
+                                  value={editProductState.price || 0}
+                                  onChange={(e) => setEditProductState({ ...editProductState, price: parseFloat(e.target.value) || 0 })}
+                                  className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-lg p-2 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-0.5">Descripción</label>
+                              <input 
+                                type="text"
+                                value={editProductState.description || ''}
+                                onChange={(e) => setEditProductState({ ...editProductState, description: e.target.value })}
+                                className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-lg p-2 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                              />
+                            </div>
+                            <div className="flex justify-end gap-2 pt-1">
+                              <button
+                                type="button"
+                                onClick={() => { setEditingId(null); setEditProductState({}); }}
+                                className="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-[#4f453f] font-bold rounded-lg uppercase text-[10px] transition-colors"
+                              >
+                                Cancelar
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleSaveEdit(flavor.id)}
+                                className="px-3 py-1.5 bg-[#39c0d3] hover:bg-[#26170c] hover:text-white text-[#26170c] font-bold rounded-lg uppercase text-[10px] transition-colors"
+                              >
+                                Guardar
+                              </button>
                             </div>
                           </div>
+                        ) : (
+                          <div 
+                            key={flavor.id}
+                            className="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-[#39c0d3]/20 text-xs shadow-xs"
+                          >
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <img src={flavor.image} alt={flavor.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-serif font-bold text-[#26170c] text-sm truncate">{flavor.name}</span>
+                                  {flavor.isBestseller && (
+                                    <span className="bg-[#d61219] text-white text-[9px] font-bold px-1.5 py-0.2 rounded uppercase shrink-0">
+                                      ★ Bestseller
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[11px] font-bold text-[#39c0d3]">${flavor.price.toFixed(2)}</span>
+                                <span className="text-[10px] text-[#81756e] block truncate">{flavor.description}</span>
+                              </div>
+                            </div>
 
-                          <div className="flex items-center gap-2 shrink-0">
-                            <button
-                              onClick={() => handleToggleBestseller(flavor.id)}
-                              className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-colors ${
-                                flavor.isBestseller 
-                                  ? 'bg-[#d61219] text-white' 
-                                  : 'bg-[#f7f3ed] text-[#4f453f] hover:bg-[#39c0d3] hover:text-white'
-                              }`}
-                            >
-                              {flavor.isBestseller ? '★ Bestseller' : '+ Destacar'}
-                            </button>
+                            <div className="flex items-center gap-2 shrink-0 ml-3">
+                              <button
+                                onClick={() => handleToggleBestseller(flavor.id)}
+                                className={`px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-colors ${
+                                  flavor.isBestseller 
+                                    ? 'bg-[#d61219] text-white' 
+                                    : 'bg-[#f7f3ed] text-[#4f453f] hover:bg-[#39c0d3] hover:text-white'
+                                }`}
+                              >
+                                {flavor.isBestseller ? '★ Bestseller' : '+ Destacar'}
+                              </button>
 
-                            <button
-                              onClick={() => handleDeleteProduct(flavor.id)}
-                              className="p-1.5 text-[#81756e] hover:text-[#d61219] hover:bg-[#d61219]/10 rounded-lg transition-colors"
-                              title="Eliminar producto"
-                            >
-                              <span className="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
+                              <button
+                                onClick={() => handleStartEdit(flavor)}
+                                className="p-1.5 text-[#81756e] hover:text-[#39c0d3] hover:bg-[#39c0d3]/10 rounded-lg transition-colors"
+                                title="Editar producto"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">edit</span>
+                              </button>
+
+                              <button
+                                onClick={() => handleDeleteProduct(flavor.id)}
+                                className="p-1.5 text-[#81756e] hover:text-[#d61219] hover:bg-[#d61219]/10 rounded-lg transition-colors"
+                                title="Eliminar producto"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                              </button>
+                            </div>
                           </div>
-                        </div>
+                        )
                       ))}
                     </div>
                   </div>
@@ -484,8 +560,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               {activeTab === 'whatsapp' && (
                 <div className="space-y-6 animate-fade-in">
                   <div className="border-b border-[#39c0d3]/20 pb-3">
-                    <h4 className="text-base font-serif font-bold text-[#26170c]">Módulo 3: Configuración WhatsApp Business</h4>
-                    <p className="text-xs text-[#81756e]">Actualiza el número receptor de pedidos y personaliza la plantilla de mensaje predeterminada.</p>
+                    <h4 className="text-base font-serif font-bold text-[#26170c]">Módulo 3: Canales y Redes Sociales</h4>
+                    <p className="text-xs text-[#81756e]">Configura el WhatsApp receptor de pedidos y las redes sociales de la pastelería.</p>
                   </div>
 
                   <div className="bg-white p-5 rounded-2xl border border-[#39c0d3]/30 space-y-4">
@@ -503,6 +579,32 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       <p className="text-[10px] text-[#81756e] mt-1">
                         Formato internacional con código de país (ej. +15551234567 o +34612345678).
                       </p>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#26170c] block mb-1">
+                        Enlace de Instagram
+                      </label>
+                      <input
+                        type="text"
+                        value={themeSettings.instagramUrl || ''}
+                        onChange={(e) => onUpdateThemeSettings({ ...themeSettings, instagramUrl: e.target.value })}
+                        placeholder="https://instagram.com/tu-usuario"
+                        className="w-full bg-[#fdf9f3] border border-[#39c0d3]/30 rounded-xl p-3 text-xs text-[#26170c] focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#26170c] block mb-1">
+                        Enlace de Facebook
+                      </label>
+                      <input
+                        type="text"
+                        value={themeSettings.facebookUrl || ''}
+                        onChange={(e) => onUpdateThemeSettings({ ...themeSettings, facebookUrl: e.target.value })}
+                        placeholder="https://facebook.com/tu-pagina"
+                        className="w-full bg-[#fdf9f3] border border-[#39c0d3]/30 rounded-xl p-3 text-xs text-[#26170c] focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                      />
                     </div>
 
                     <div>

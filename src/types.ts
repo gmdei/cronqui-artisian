@@ -52,5 +52,7 @@ export interface ThemeSettings {
   heidiPhotoUrl?: string;
   whatsappNumber: string;
   whatsappMessageTemplate: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
 }
 
