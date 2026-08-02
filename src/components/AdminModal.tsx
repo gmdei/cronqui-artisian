@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SpoonableFlavor, BatchInfo, ThemeSettings } from '../types';
 import { CURRENT_BATCH } from '../data/spoonables';
+import { verifyTOTP } from '../utils/totp';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -19,9 +20,25 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   themeSettings,
   onUpdateThemeSettings
 }) => {
-  const [passcode, setPasscode] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string>(() => {
+    return localStorage.getItem('crunqi_admin_email') || '';
+  });
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [totpSecret, setTotpSecret] = useState<string>(() => {
+    let secret = localStorage.getItem('crunqi_totp_secret');
+    if (!secret) {
+      secret = 'CRUNQI2FASECRET'; // Valid base32
+      localStorage.setItem('crunqi_totp_secret', secret);
+    }
+    return secret;
+  });
+  const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(() => {
+    return localStorage.getItem('crunqi_2fa_enabled') === 'true';
+  });
+  const [loginStep, setLoginStep] = useState<'google' | '2fa_setup' | '2fa_verify'>('google');
+
   const [activeTab, setActiveTab] = useState<'theme' | 'products' | 'whatsapp' | 'batch'>('theme');
   const [batch, setBatch] = useState<BatchInfo>(CURRENT_BATCH);
 
@@ -69,14 +86,52 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passcode.trim() === 'crunqi-artisan' || passcode.trim() === 'admin' || passcode.trim() === '1234') {
-      setIsAuthenticated(true);
-      setError(false);
-    } else {
-      setError(true);
+  const handleGoogleSignIn = (email: string) => {
+    if (!email || !email.includes('@')) {
+      setError('Por favor, ingresa un correo de Gmail válido.');
+      return;
     }
+    setUserEmail(email);
+    localStorage.setItem('crunqi_admin_email', email);
+    setError(null);
+    if (!is2FAEnabled) {
+      setLoginStep('2fa_setup');
+    } else {
+      setLoginStep('2fa_verify');
+    }
+  };
+
+  const handleVerify2FA = (e: React.FormEvent) => {
+    e.preventDefault();
+    const isValid = verifyTOTP(totpSecret, twoFactorCode);
+    if (isValid) {
+      setIsAuthenticated(true);
+      setError(null);
+      setTwoFactorCode('');
+    } else {
+      setError('Código 2FA incorrecto. Verifica tu Google Authenticator.');
+    }
+  };
+
+  const handleSetup2FA = (e: React.FormEvent) => {
+    e.preventDefault();
+    const isValid = verifyTOTP(totpSecret, twoFactorCode);
+    if (isValid) {
+      setIs2FAEnabled(true);
+      localStorage.setItem('crunqi_2fa_enabled', 'true');
+      setIsAuthenticated(true);
+      setError(null);
+      setTwoFactorCode('');
+    } else {
+      setError('Código 2FA incorrecto. Asegúrate de escanear el QR e ingresar el código actual de 6 dígitos.');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setTwoFactorCode('');
+    setLoginStep('google');
+    setError(null);
   };
 
   const handleToggleBestseller = (id: string) => {
@@ -145,33 +200,188 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
         {/* Auth or Portal Tabs Body */}
         {!isAuthenticated ? (
-          <div className="p-8 overflow-y-auto text-[#1c1c18] flex items-center justify-center min-h-[350px]">
-            <form onSubmit={handleLogin} className="space-y-4 max-w-sm w-full text-center">
-              <span className="material-symbols-outlined text-5xl text-[#39c0d3]">lock</span>
-              <h4 className="text-2xl font-serif font-bold">Acceso a Cocina & Administración</h4>
-              <p className="text-xs text-[#81756e]">
-                Ingresa el Token de seguridad (clave: <code className="bg-[#e6e2dc] px-1.5 py-0.5 rounded text-[#26170c] font-mono font-bold">crunqi-artisan</code>) para personalizar la web en tiempo real:
-              </p>
+          <div className="p-8 overflow-y-auto text-[#1c1c18] flex flex-col items-center justify-center min-h-[420px]">
+            {loginStep === 'google' && (
+              <div className="space-y-6 max-w-sm w-full text-center animate-fade-in">
+                <div className="flex justify-center">
+                  <svg className="w-12 h-12" viewBox="0 0 24 24">
+                    <path
+                      fill="#EA4335"
+                      d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114A5.99 5.99 0 0 1 8 12.527a5.99 5.99 0 0 1 5.99-5.99c2.476 0 4.545 1.488 5.437 3.613l3.665-2.846C20.841 3.513 16.85 1 12.24 1 5.866 1 12.24s4.866 11.24 11.24 11.24c5.895 0 10.87-4.223 11.21-10.155H12.24v-3.04z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-xl font-serif font-bold text-[#26170c]">Iniciar sesión con Google</h4>
+                  <p className="text-xs text-[#81756e] mt-1">Elige una cuenta de Google para acceder al panel administrativo de CRUNQI</p>
+                </div>
 
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Token de Acceso..."
-                className="w-full bg-white border border-[#39c0d3]/40 rounded-2xl p-3.5 text-center font-mono text-sm focus:ring-2 focus:ring-[#39c0d3] outline-none shadow-inner"
-              />
+                <div className="space-y-2.5 text-left">
+                  <button
+                    onClick={() => handleGoogleSignIn('heidy.saratxaga@gmail.com')}
+                    className="w-full bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-3.5 flex items-center gap-3 transition-all hover:border-[#39c0d3] shadow-xs cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#d61219]/10 text-[#d61219] flex items-center justify-center font-bold text-sm">
+                      H
+                    </div>
+                    <div className="flex-1">
+                      <span className="font-bold text-xs text-[#26170c] block">Heidy Saratxaga</span>
+                      <span className="text-[10px] text-[#81756e] block">heidy.saratxaga@gmail.com</span>
+                    </div>
+                  </button>
 
-              {error && (
-                <p className="text-xs text-[#d61219] font-medium">Clave incorrecta. Reintenta con "crunqi-artisan".</p>
-              )}
+                  <button
+                    onClick={() => handleGoogleSignIn('admin.crunqi@gmail.com')}
+                    className="w-full bg-white hover:bg-gray-50 border border-gray-200 rounded-2xl p-3.5 flex items-center gap-3 transition-all hover:border-[#39c0d3] shadow-xs cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#39c0d3]/10 text-[#39c0d3] flex items-center justify-center font-bold text-sm">
+                      A
+                    </div>
+                    <div className="flex-1">
+                      <span className="font-bold text-xs text-[#26170c] block">Administrador General</span>
+                      <span className="text-[10px] text-[#81756e] block">admin.crunqi@gmail.com</span>
+                    </div>
+                  </button>
 
-              <button
-                type="submit"
-                className="w-full bg-[#39c0d3] text-[#26170c] py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider hover:bg-[#26170c] hover:text-white transition-colors shadow-md"
-              >
-                Autenticar Panel
-              </button>
-            </form>
+                  <div className="pt-3 border-t border-gray-150 mt-3">
+                    <form onSubmit={(e) => {
+                      e.preventDefault();
+                      const form = e.currentTarget;
+                      const input = form.elements.namedItem('customEmail') as HTMLInputElement;
+                      handleGoogleSignIn(input.value);
+                    }} className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase text-[#81756e]">O introduce una cuenta personalizada</label>
+                      <div className="flex gap-2">
+                        <input
+                          name="customEmail"
+                          type="email"
+                          required
+                          placeholder="ejemplo@gmail.com"
+                          className="flex-1 bg-white border border-[#39c0d3]/30 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                        />
+                        <button
+                          type="submit"
+                          className="bg-[#26170c] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#39c0d3] hover:text-[#26170c] transition-colors cursor-pointer"
+                        >
+                          Siguiente
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                {error && (
+                  <p className="text-xs text-[#d61219] font-medium">{error}</p>
+                )}
+              </div>
+            )}
+
+            {loginStep === '2fa_setup' && (
+              <div className="space-y-5 max-w-sm w-full text-center animate-fade-in">
+                <span className="material-symbols-outlined text-5xl text-[#d61219] animate-pulse">security</span>
+                <div>
+                  <h4 className="text-xl font-serif font-bold text-[#26170c]">Configurar Google Authenticator</h4>
+                  <p className="text-xs text-[#81756e] mt-1">Escanea este código con tu aplicación de autenticación para vincular el acceso de <b>{userEmail}</b></p>
+                </div>
+
+                <div className="bg-white p-3 rounded-2xl border border-gray-200 inline-block shadow-sm">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`otpauth://totp/CRUNQI:${userEmail}?secret=${totpSecret}&issuer=CRUNQI`)}`}
+                    alt="Código QR"
+                    className="w-[180px] h-[180px] block mx-auto"
+                  />
+                </div>
+
+                <div className="bg-[#f7f3ed] p-3 rounded-xl border border-gray-200 text-left">
+                  <span className="text-[10px] font-bold text-[#81756e] uppercase block">Clave de Configuración Manual</span>
+                  <code className="text-xs font-mono font-bold text-[#26170c] select-all block mt-0.5">{totpSecret}</code>
+                </div>
+
+                <form onSubmit={handleSetup2FA} className="space-y-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-[#81756e] block mb-1">Código de 6 dígitos del Autenticador</label>
+                    <input
+                      type="text"
+                      pattern="[0-9]*"
+                      inputMode="numeric"
+                      maxLength={6}
+                      required
+                      value={twoFactorCode}
+                      onChange={(e) => setTwoFactorCode(e.target.value.replace(/[^0-9]/g, ''))}
+                      placeholder="000000"
+                      className="w-full bg-white border border-[#39c0d3]/40 rounded-2xl p-3.5 text-center font-mono text-lg tracking-[0.5em] focus:ring-2 focus:ring-[#39c0d3] outline-none shadow-inner"
+                    />
+                  </div>
+
+                  {error && (
+                    <p className="text-xs text-[#d61219] font-medium">{error}</p>
+                  )}
+
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setLoginStep('google')}
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-[#4f453f] py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      Atrás
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-[2] bg-[#39c0d3] text-[#26170c] py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider hover:bg-[#26170c] hover:text-white transition-colors shadow-md cursor-pointer"
+                    >
+                      Activar y Entrar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {loginStep === '2fa_verify' && (
+              <form onSubmit={handleVerify2FA} className="space-y-5 max-w-sm w-full text-center animate-fade-in">
+                <span className="material-symbols-outlined text-5xl text-[#39c0d3]">gpp_good</span>
+                <div>
+                  <h4 className="text-xl font-serif font-bold text-[#26170c]">Verificación de Seguridad (2FA)</h4>
+                  <p className="text-xs text-[#81756e] mt-1">Ingresa el código de 6 dígitos que muestra Google Authenticator para la cuenta <b>{userEmail}</b></p>
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    pattern="[0-9]*"
+                    inputMode="numeric"
+                    maxLength={6}
+                    required
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/[^0-9]/g, ''))}
+                    placeholder="000000"
+                    className="w-full bg-white border border-[#39c0d3]/40 rounded-2xl p-3.5 text-center font-mono text-lg tracking-[0.5em] focus:ring-2 focus:ring-[#39c0d3] outline-none shadow-inner"
+                  />
+                </div>
+
+                {error && (
+                  <p className="text-xs text-[#d61219] font-medium">{error}</p>
+                )}
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginStep('google');
+                      setError(null);
+                    }}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-[#4f453f] py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    Atrás
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-[2] bg-[#39c0d3] text-[#26170c] py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider hover:bg-[#26170c] hover:text-white transition-colors shadow-md cursor-pointer"
+                  >
+                    Verificar y Entrar
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         ) : (
           <div className="flex flex-col flex-1 overflow-hidden">
@@ -697,12 +907,30 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <span>Persistencia local activa (localStorage)</span>
               </span>
 
-              <button
-                onClick={() => setIsAuthenticated(false)}
-                className="text-xs font-bold text-[#81756e] hover:text-[#d61219] underline"
-              >
-                Bloquear Portal y Salir
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => {
+                    if (confirm('¿Estás seguro de restablecer el inicio de sesión con Google y desactivar el Doble Factor (2FA)?')) {
+                      localStorage.removeItem('crunqi_admin_email');
+                      localStorage.removeItem('crunqi_2fa_enabled');
+                      setIs2FAEnabled(false);
+                      setUserEmail('');
+                      handleLogout();
+                      alert('Vínculo de Google y 2FA restablecidos.');
+                    }
+                  }}
+                  className="text-[10px] font-bold text-[#81756e] hover:text-[#d61219] underline cursor-pointer"
+                >
+                  Restablecer 2FA y Google
+                </button>
+                
+                <button
+                  onClick={handleLogout}
+                  className="text-xs font-bold text-[#26170c] hover:text-[#d61219] underline cursor-pointer"
+                >
+                  Bloquear Portal y Salir
+                </button>
+              </div>
             </div>
 
           </div>

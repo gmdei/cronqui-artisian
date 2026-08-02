@@ -123,15 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          {/* Admin Access Button */}
-          <button
-            onClick={onOpenAdmin}
-            className="p-2 text-[#81756e] hover:text-[#26170c] hover:bg-[#39c0d3]/10 rounded-full transition-colors flex items-center justify-center"
-            title={language === 'es' ? 'Panel de Control Admin (🔒)' : 'Admin Control Panel (🔒)'}
-            aria-label="Acceso Admin"
-          >
-            <span className="material-symbols-outlined text-xl">admin_panel_settings</span>
-          </button>
+
 
           {/* Cart Icon Button */}
           <button
