@@ -29,7 +29,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [totpSecret, setTotpSecret] = useState<string>(() => {
     let secret = localStorage.getItem('crunqi_totp_secret');
     if (!secret) {
-      secret = 'CRUNQI2FASECRET'; // Valid base32
+      secret = 'CRUNQI2FASECRETX'; // 16 chars (valid base32 without padding)
       localStorage.setItem('crunqi_totp_secret', secret);
     }
     return secret;
@@ -305,11 +305,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                   <p className="text-xs text-[#81756e] mt-1">Escanea este código con tu aplicación de autenticación para vincular el acceso de <b>{userEmail}</b></p>
                 </div>
 
-                <div className="bg-white p-3 rounded-2xl border border-gray-200 inline-block shadow-sm">
+                <div className="bg-white p-4 rounded-xl border border-gray-300 inline-block shadow-md">
                   <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(`otpauth://totp/CRUNQI:${userEmail}?secret=${totpSecret}&issuer=CRUNQI`)}`}
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=10&data=${encodeURIComponent(`otpauth://totp/CRUNQI:${userEmail}?secret=${totpSecret}&issuer=CRUNQI`)}`}
                     alt="Código QR"
-                    className="w-[180px] h-[180px] block mx-auto"
+                    className="w-[220px] h-[220px] block mx-auto"
                   />
                 </div>
 
