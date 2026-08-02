@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --logo-cyan: #39c0d3;
+    --logo-red: #d61219;
+    --primary: #26170c;
+    --surface: #fdf9f3;
+  }
+  
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #fdf9f3;
+    color: #1c1c18;
+  }
+
+  h1, h2, h3, h4, .font-serif, .font-headline {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.soft-shadow {
+  box-shadow: 0 30px 60px -12px rgba(38, 23, 12, 0.12);
+}
+
+.dot-bg {
+  background-image: radial-gradient(#39c0d3 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+.dot-bg-dark {
+  background-image: radial-gradient(rgba(57, 192, 211, 0.25) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #fdf9f3;
+}
+::-webkit-scrollbar-thumb {
+  background: #39c0d3;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d61219;
+}
+

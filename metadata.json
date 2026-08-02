@@ -1,0 +1,6 @@
+{
+  "name": "CRUNQI Artisan Spoonables",
+  "description": "Handcrafted artisan desserts layered to perfection. Discover signature spoonables collection, story, and custom ordering.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
