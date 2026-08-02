@@ -1039,7 +1039,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         {authorizedEmails.map(email => (
                           <div key={email} className="flex items-center justify-between bg-[#fdf9f3] px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold">
                             <span className="font-mono text-[#26170c]">{email}</span>
-                            {email !== 'admin.crunqi@gmail.com' && email !== userEmail && (
+                            {email !== 'admin.crunqi@gmail.com' && (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -1047,7 +1047,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                                     setAuthorizedEmails(prev => prev.filter(e => e !== email));
                                   }
                                 }}
-                                className="text-[#d61219] hover:underline font-bold text-[10px] uppercase"
+                                className="text-[#d61219] hover:underline font-bold text-[10px] uppercase cursor-pointer"
                               >
                                 Revocar
                               </button>
