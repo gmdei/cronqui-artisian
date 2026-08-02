@@ -39,6 +39,19 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   });
   const [loginStep, setLoginStep] = useState<'google' | '2fa_setup' | '2fa_verify'>('google');
 
+  const [authorizedEmails, setAuthorizedEmails] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('crunqi_authorized_emails');
+      return saved ? JSON.parse(saved) : ['heidy.saratxaga@gmail.com', 'admin.crunqi@gmail.com'];
+    } catch {
+      return ['heidy.saratxaga@gmail.com', 'admin.crunqi@gmail.com'];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('crunqi_authorized_emails', JSON.stringify(authorizedEmails));
+  }, [authorizedEmails]);
+
   const [activeTab, setActiveTab] = useState<'theme' | 'products' | 'whatsapp' | 'batch'>('theme');
   const [batch, setBatch] = useState<BatchInfo>(CURRENT_BATCH);
 
@@ -87,12 +100,20 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   if (!isOpen) return null;
 
   const handleGoogleSignIn = (email: string) => {
-    if (!email || !email.includes('@')) {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !normalizedEmail.includes('@')) {
       setError('Por favor, ingresa un correo de Gmail válido.');
       return;
     }
-    setUserEmail(email);
-    localStorage.setItem('crunqi_admin_email', email);
+    
+    // Check if the email is in the authorized list
+    if (!authorizedEmails.includes(normalizedEmail)) {
+      setError('Acceso denegado: Esta cuenta de correo no está autorizada para administrar el sitio.');
+      return;
+    }
+
+    setUserEmail(normalizedEmail);
+    localStorage.setItem('crunqi_admin_email', normalizedEmail);
     setError(null);
     if (!is2FAEnabled) {
       setLoginStep('2fa_setup');
@@ -832,7 +853,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                       </p>
                     </div>
 
-                    <div className="pt-2">
+                    <div className="pt-2 flex flex-wrap gap-2">
                       <a
                         href={`https://wa.me/${themeSettings.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Prueba de mensaje desde el Panel Admin CRUNQI")}`}
                         target="_blank"
@@ -842,6 +863,63 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         <span className="material-symbols-outlined text-[16px]">chat</span>
                         <span>Probar Enlace de WhatsApp</span>
                       </a>
+                    </div>
+
+                    {/* Authorized Emails List */}
+                    <div className="pt-5 border-t border-[#39c0d3]/20 mt-4 space-y-3">
+                      <div>
+                        <label className="text-xs font-bold uppercase tracking-wider text-[#26170c] block">
+                          Gestión de Accesos (Emails Autorizados)
+                        </label>
+                        <p className="text-[10px] text-[#81756e]">Solo las cuentas de Gmail en esta lista podrán configurar el 2FA e ingresar al panel.</p>
+                      </div>
+
+                      <div className="space-y-1.5 max-h-[140px] overflow-y-auto">
+                        {authorizedEmails.map(email => (
+                          <div key={email} className="flex items-center justify-between bg-[#fdf9f3] px-3.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold">
+                            <span className="font-mono text-[#26170c]">{email}</span>
+                            {email !== 'admin.crunqi@gmail.com' && email !== userEmail && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (confirm(`¿Estás seguro de revocar la autorización para ${email}?`)) {
+                                    setAuthorizedEmails(prev => prev.filter(e => e !== email));
+                                  }
+                                }}
+                                className="text-[#d61219] hover:underline font-bold text-[10px] uppercase"
+                              >
+                                Revocar
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <form onSubmit={(e) => {
+                        e.preventDefault();
+                        const form = e.currentTarget;
+                        const input = form.elements.namedItem('newAuthEmail') as HTMLInputElement;
+                        const newEmail = input.value.trim().toLowerCase();
+                        if (newEmail && !authorizedEmails.includes(newEmail)) {
+                          setAuthorizedEmails(prev => [...prev, newEmail]);
+                          input.value = '';
+                          alert(`¡${newEmail} ahora está autorizado para acceder!`);
+                        }
+                      }} className="flex gap-2">
+                        <input
+                          name="newAuthEmail"
+                          type="email"
+                          required
+                          placeholder="correo-cliente@gmail.com"
+                          className="flex-1 bg-[#fdf9f3] border border-[#39c0d3]/30 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                        />
+                        <button
+                          type="submit"
+                          className="bg-[#26170c] hover:bg-[#39c0d3] hover:text-[#26170c] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer shrink-0"
+                        >
+                          Autorizar
+                        </button>
+                      </form>
                     </div>
                   </div>
                 </div>
