@@ -57,20 +57,7 @@ export const Story: React.FC<StoryProps> = ({ customPhotoUrl, onUpdatePhotoUrl }
               referrerPolicy="no-referrer"
             />
 
-            {/* Quick Replace Photo Button Overlay */}
-            <label 
-              title={language === 'es' ? 'Subir/Cambiar foto de Heidi desde tu dispositivo' : 'Upload/Change Heidi photo from your device'}
-              className="absolute top-4 left-4 bg-black/60 hover:bg-black text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md cursor-pointer transition-all flex items-center gap-1.5 z-20 shadow-md hover:scale-105"
-            >
-              <span className="material-symbols-outlined text-[16px]">photo_camera</span>
-              <span>{language === 'es' ? 'Cambiar Foto' : 'Change Photo'}</span>
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleFileChange} 
-                className="hidden" 
-              />
-            </label>
+
 
             {/* Image Overlay Label */}
             <div className="absolute bottom-4 left-4 right-4 bg-[#26170c]/85 backdrop-blur-md text-white p-3 rounded-2xl text-center shadow-lg border border-white/20">
