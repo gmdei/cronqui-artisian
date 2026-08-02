@@ -4,7 +4,9 @@ export const LOGO_URL = "https://lh3.googleusercontent.com/aida-public/AB6AXuCh8
 
 export const FOOTER_LOGO_URL = "https://lh3.googleusercontent.com/aida-public/AB6AXuDaUfm6Sn_qHwKQV3Un7pCCIO0KfEhkzx9UYFHWiTcdhRdnWKMTpgDoT7bF426KKl2mfaSVutEnfzTbqeTAH9hLr8gk6AUI8wZ_tFpJbKbZOj5kHljsy-_t9xy80-2FeF-mYhWFIHdDRkjS3SpDZlVFvcLHLtok3qlqa_Wq3LFYDqAFeXFBG0qBzKO1pd664AnMRaS89jI2Aaxy4LtcIZhqv_2m1wWhDHRG3Sftj4W4eFjK2tf5eFAVrhonyDZ4C32qwQ";
 
-export const HEIDI_PHOTO_URL = "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=800&q=80";
+import heidiPhoto from '../../assets/heidi.jpg';
+
+export const HEIDI_PHOTO_URL = heidiPhoto;
 export const HEIDI_PHOTO_BACKUP = "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80";
 
 export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
