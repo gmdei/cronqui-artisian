@@ -81,7 +81,7 @@ export const Newsletter: React.FC = () => {
         {submitted ? (
           <div className="bg-[#39c0d3]/20 border border-[#39c0d3] text-[#39c0d3] p-4 rounded-2xl max-w-md mx-auto font-medium text-sm flex items-center justify-center gap-2 animate-fade-in">
             <span className="material-symbols-outlined text-[20px]">check_circle</span>
-            <span>{language === 'es' ? '¡Bienvenido a la familia CRUNQI! Revisa tu correo pronto.' : 'Welcome to the CRUNQI inner circle! Check your inbox soon.'}</span>
+            <span>{language === 'es' ? '¡Te has suscrito con éxito! Tu correo ha sido registrado.' : 'You have successfully subscribed! Your email has been registered.'}</span>
           </div>
         ) : (
           <div className="max-w-md mx-auto">
