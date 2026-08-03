@@ -186,6 +186,7 @@ export default function App() {
             flavors={filteredFlavors}
             onSelectFlavor={(flavor) => setActiveFlavor(flavor)}
             onAddToCart={(flavor) => handleAddToCart(flavor, 1)}
+            whatsappNumber={themeSettings.whatsappNumber}
           />
         </section>
 
@@ -214,6 +215,7 @@ export default function App() {
         flavor={activeFlavor}
         onClose={() => setActiveFlavor(null)}
         onAddToCart={(flavor, qty, size) => handleAddToCart(flavor, qty, size)}
+        whatsappNumber={themeSettings.whatsappNumber}
       />
 
       {/* Customizer Modal */}

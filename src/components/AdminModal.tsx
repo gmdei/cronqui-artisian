@@ -40,11 +40,18 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [loginStep, setLoginStep] = useState<'google' | '2fa_setup' | '2fa_verify'>('google');
 
   const [authorizedEmails, setAuthorizedEmails] = useState<string[]>(() => {
+    const defaults = ['heidy.saratxaga@gmail.com', 'mgregoriomartinez@gmail.com'];
     try {
       const saved = localStorage.getItem('crunqi_authorized_emails');
-      return saved ? JSON.parse(saved) : ['heidy.saratxaga@gmail.com', 'mgregoriomartinez@gmail.com'];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return Array.from(new Set([...defaults, ...parsed]));
+        }
+      }
+      return defaults;
     } catch {
-      return ['heidy.saratxaga@gmail.com', 'mgregoriomartinez@gmail.com'];
+      return defaults;
     }
   });
 
