@@ -4,16 +4,56 @@ import { useLanguage } from '../context/LanguageContext';
 export const Newsletter: React.FC = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { language, t } = useLanguage();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      setSubmitted(true);
-      setTimeout(() => {
-        setSubmitted(false);
+    if (!email.trim()) return;
+
+    setLoading(true);
+    setError(null);
+
+    const apiUrl = import.meta.env.VITE_NEWSLETTER_API_URL;
+
+    if (apiUrl) {
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: email.trim() }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        setSubmitted(true);
         setEmail('');
-      }, 4000);
+      } catch (err) {
+        console.error('Error subscribing email:', err);
+        setError(
+          language === 'es'
+            ? 'Hubo un error al suscribirte. Inténtalo de nuevo.'
+            : 'There was an error subscribing. Please try again.'
+        );
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Simulation for development
+      console.warn('VITE_NEWSLETTER_API_URL environment variable is not defined. Simulating submission.');
+      setTimeout(() => {
+        setSubmitted(true);
+        setLoading(false);
+        setEmail('');
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 5000);
+      }, 1000);
     }
   };
 
@@ -44,22 +84,38 @@ export const Newsletter: React.FC = () => {
             <span>{language === 'es' ? '¡Bienvenido a la familia CRUNQI! Revisa tu correo pronto.' : 'Welcome to the CRUNQI inner circle! Check your inbox soon.'}</span>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder={t('newsletter.placeholder')}
-              className="flex-1 bg-[#3d2b1f] border border-[#39c0d3]/30 text-white px-6 py-4 rounded-2xl text-sm placeholder-[#d2c4bc] focus:outline-none focus:ring-2 focus:ring-[#39c0d3] focus:border-transparent transition-all"
-            />
-            <button
-              type="submit"
-              className="bg-[#39c0d3] text-[#26170c] px-8 py-4 rounded-2xl font-bold text-sm hover:bg-white active:scale-95 transition-all shadow-md shrink-0"
-            >
-              {t('newsletter.subscribe')}
-            </button>
-          </form>
+          <div className="max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+                placeholder={t('newsletter.placeholder')}
+                className="flex-1 bg-[#3d2b1f] border border-[#39c0d3]/30 text-white px-6 py-4 rounded-2xl text-sm placeholder-[#d2c4bc] focus:outline-none focus:ring-2 focus:ring-[#39c0d3] focus:border-transparent transition-all disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-[#39c0d3] text-[#26170c] px-8 py-4 rounded-2xl font-bold text-sm hover:bg-white active:scale-95 transition-all shadow-md shrink-0 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <span className="animate-spin rounded-full h-4 w-4 border-2 border-[#26170c] border-t-transparent" />
+                    <span>{language === 'es' ? 'Enviando...' : 'Sending...'}</span>
+                  </>
+                ) : (
+                  t('newsletter.subscribe')
+                )}
+              </button>
+            </form>
+            {error && (
+              <p className="text-red-400 text-xs mt-3 text-left pl-2 animate-fade-in">
+                {error}
+              </p>
+            )}
+          </div>
         )}
       </div>
     </section>
