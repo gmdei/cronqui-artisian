@@ -8,7 +8,6 @@ import { Story } from './components/Story';
 import { FlavorFilter } from './components/FlavorFilter';
 import { ProductGrid } from './components/ProductGrid';
 import { FlavorDetailModal } from './components/FlavorDetailModal';
-import { CustomizerModal } from './components/CustomizerModal';
 import { Newsletter } from './components/Newsletter';
 import { Footer } from './components/Footer';
 import { AdminModal } from './components/AdminModal';
@@ -52,7 +51,6 @@ export default function App() {
 
   // Modals state
   const [activeFlavor, setActiveFlavor] = useState<SpoonableFlavor | null>(null);
-  const [customizerOpen, setCustomizerOpen] = useState<boolean>(false);
   const [cartOpen, setCartOpen] = useState<boolean>(false);
   const [adminOpen, setAdminOpen] = useState<boolean>(false);
 
@@ -145,7 +143,6 @@ export default function App() {
       <Header
         cartCount={totalCartCount}
         onOpenCart={() => setCartOpen(true)}
-        onOpenCustomizer={() => setCustomizerOpen(true)}
         onOpenAdmin={() => setAdminOpen(true)}
         whatsappNumber={themeSettings.whatsappNumber}
       />
@@ -159,7 +156,6 @@ export default function App() {
             const el = document.getElementById('spoonables');
             el?.scrollIntoView({ behavior: 'smooth' });
           }}
-          onCustomizerClick={() => setCustomizerOpen(true)}
           whatsappNumber={themeSettings.whatsappNumber}
         />
 
@@ -204,7 +200,6 @@ export default function App() {
       {/* Footer */}
       <Footer
         onOpenAdmin={() => setAdminOpen(true)}
-        onOpenCustomizer={() => setCustomizerOpen(true)}
         whatsappNumber={themeSettings.whatsappNumber}
         instagramUrl={themeSettings.instagramUrl}
         facebookUrl={themeSettings.facebookUrl}
@@ -218,13 +213,7 @@ export default function App() {
         whatsappNumber={themeSettings.whatsappNumber}
       />
 
-      {/* Customizer Modal */}
-      <CustomizerModal
-        isOpen={customizerOpen}
-        onClose={() => setCustomizerOpen(false)}
-        onAddToCart={(customFlavor) => handleAddToCart(customFlavor, 1)}
-        whatsappNumber={themeSettings.whatsappNumber}
-      />
+
 
       {/* Cart Drawer */}
       <CartDrawer

@@ -4,7 +4,6 @@ import { useLanguage } from '../context/LanguageContext';
 
 interface FooterProps {
   onOpenAdmin: () => void;
-  onOpenCustomizer: () => void;
   whatsappNumber?: string;
   instagramUrl?: string;
   facebookUrl?: string;
@@ -12,7 +11,6 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({
   onOpenAdmin,
-  onOpenCustomizer,
   whatsappNumber = "+15551234567",
   instagramUrl = "https://instagram.com/crunqi",
   facebookUrl = "https://facebook.com/crunqi"
@@ -104,12 +102,6 @@ export const Footer: React.FC<FooterProps> = ({
             <a href="#spoonables" className="text-xs font-bold text-[#d61219] hover:underline">
               {t('nav.spoonables')}
             </a>
-            <button 
-              onClick={onOpenCustomizer} 
-              className="text-left text-xs font-medium text-[#26170c] hover:text-[#39c0d3]"
-            >
-              {t('nav.customizer')}
-            </button>
           </div>
 
           <div className="flex flex-col gap-2.5">

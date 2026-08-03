@@ -4,13 +4,11 @@ import { useLanguage } from '../context/LanguageContext';
 
 interface HeroProps {
   onExploreClick: () => void;
-  onCustomizerClick: () => void;
   whatsappNumber?: string;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onExploreClick,
-  onCustomizerClick,
   whatsappNumber = "+15551234567"
 }) => {
   const { language, t } = useLanguage();
@@ -61,14 +59,6 @@ export const Hero: React.FC<HeroProps> = ({
               className="border-2 border-[#39c0d3] text-[#39c0d3] px-7 py-3.5 rounded-full font-semibold text-sm hover:bg-[#39c0d3] hover:text-white active:scale-95 transition-all"
             >
               {t('hero.btnCatalog')}
-            </button>
-
-            <button
-              onClick={onCustomizerClick}
-              className="bg-white/80 border border-[#39c0d3]/30 text-[#26170c] px-6 py-3.5 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-white hover:border-[#39c0d3] shadow-xs active:scale-95 transition-all"
-            >
-              <span className="material-symbols-outlined text-[#d61219] text-[18px]">tune</span>
-              <span>{t('hero.btnCustomizer')}</span>
             </button>
           </div>
 

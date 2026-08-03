@@ -5,7 +5,6 @@ import { useLanguage } from '../context/LanguageContext';
 interface HeaderProps {
   cartCount: number;
   onOpenCart: () => void;
-  onOpenCustomizer: () => void;
   onOpenAdmin: () => void;
   whatsappNumber?: string;
 }
@@ -13,7 +12,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   cartCount,
   onOpenCart,
-  onOpenCustomizer,
   onOpenAdmin,
   whatsappNumber = "+15551234567"
 }) => {
@@ -75,17 +73,6 @@ export const Header: React.FC<HeaderProps> = ({
             className="text-sm font-medium text-[#4f453f] hover:text-[#39c0d3] transition-colors"
           >
             {t('nav.story')}
-          </a>
-          <a 
-            href="#customizer" 
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenCustomizer();
-            }}
-            className="text-sm font-medium text-[#4f453f] hover:text-[#39c0d3] transition-colors flex items-center gap-1"
-          >
-            <span className="material-symbols-outlined text-[16px] text-[#39c0d3]">auto_awesome</span>
-            {t('nav.customizer')}
           </a>
           <a 
             href="#contact" 
@@ -188,15 +175,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             {t('nav.story')}
           </a>
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              onOpenCustomizer();
-            }}
-            className="block w-full text-left text-base font-medium text-[#1c1c18] hover:text-[#39c0d3]"
-          >
-            {t('nav.customizer')}
-          </button>
         </div>
       )}
     </header>
