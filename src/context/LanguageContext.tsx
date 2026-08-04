@@ -7,6 +7,9 @@ interface LanguageContextType {
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
   t: (key: string) => string;
+  updateTranslation: (lang: Language, key: string, value: string) => void;
+  resetTranslations: () => void;
+  customTranslations: Record<Language, Record<string, string>>;
 }
 
 const translations: Record<Language, Record<string, string>> = {
@@ -202,6 +205,15 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   });
 
+  const [customTranslations, setCustomTranslations] = useState<Record<Language, Record<string, string>>>(() => {
+    try {
+      const saved = localStorage.getItem('crunqi_custom_translations');
+      return saved ? JSON.parse(saved) : { es: {}, en: {} };
+    } catch {
+      return { es: {}, en: {} };
+    }
+  });
+
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     try {
@@ -215,12 +227,40 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguage(language === 'es' ? 'en' : 'es');
   };
 
+  const updateTranslation = (lang: Language, key: string, value: string) => {
+    setCustomTranslations(prev => {
+      const updated = {
+        ...prev,
+        [lang]: {
+          ...prev[lang],
+          [key]: value
+        }
+      };
+      try {
+        localStorage.setItem('crunqi_custom_translations', JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      return updated;
+    });
+  };
+
+  const resetTranslations = () => {
+    const empty = { es: {}, en: {} };
+    setCustomTranslations(empty);
+    try {
+      localStorage.removeItem('crunqi_custom_translations');
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const t = (key: string): string => {
-    return translations[language][key] || translations['es'][key] || key;
+    return customTranslations[language]?.[key] || translations[language]?.[key] || translations['es']?.[key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t, updateTranslation, resetTranslations, customTranslations }}>
       {children}
     </LanguageContext.Provider>
   );

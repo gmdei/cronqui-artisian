@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SpoonableFlavor, BatchInfo, ThemeSettings } from '../types';
-import { CURRENT_BATCH } from '../data/spoonables';
+import { CURRENT_BATCH, HERO_IMAGES } from '../data/spoonables';
 import { verifyTOTP } from '../utils/totp';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -59,7 +60,18 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     localStorage.setItem('crunqi_authorized_emails', JSON.stringify(authorizedEmails));
   }, [authorizedEmails]);
 
-  const [activeTab, setActiveTab] = useState<'theme' | 'products' | 'whatsapp' | 'batch'>('theme');
+  const { updateTranslation, resetTranslations, customTranslations } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'theme' | 'products' | 'whatsapp' | 'batch' | 'content'>('theme');
+  const [contentLang, setContentLang] = useState<'es' | 'en'>('es');
+  const [customHeroImages, setCustomHeroImages] = useState<Record<string, string>>(() => {
+    try {
+      const saved = localStorage.getItem('crunqi_custom_hero_images');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
   const [batch, setBatch] = useState<BatchInfo>(CURRENT_BATCH);
 
   // New product form state
@@ -463,7 +475,21 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                 <span className="material-symbols-outlined text-[16px]">cooking</span>
                 <span>4. Lote de Cocina</span>
               </button>
+
+              <button
+                onClick={() => setActiveTab('content')}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                  activeTab === 'content' 
+                    ? 'bg-[#39c0d3] text-[#26170c] shadow-xs' 
+                    : 'text-[#4f453f] hover:bg-white'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[16px]">edit_note</span>
+                <span>5. Contenido (Textos/Imágenes)</span>
+              </button>
             </div>
+
+
 
             {/* Tab Contents Area */}
             <div className="p-6 overflow-y-auto space-y-6 flex-1 text-[#1c1c18]">
@@ -1188,6 +1214,178 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: Page Content Customizer (Texts and Cover Images) */}
+              {activeTab === 'content' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="border-b border-[#39c0d3]/20 pb-3 flex justify-between items-center">
+                    <div>
+                      <h4 className="text-base font-serif font-bold text-[#26170c]">Módulo 5: Personalización de Contenido</h4>
+                      <p className="text-xs text-[#81756e]">Edita textos principales de la web e imágenes de portada en tiempo real.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm('¿Estás seguro de restablecer todos los textos e imágenes personalizados a sus valores por defecto?')) {
+                          resetTranslations();
+                          localStorage.removeItem('crunqi_custom_hero_images');
+                          setCustomHeroImages({});
+                          window.dispatchEvent(new Event('crunqi_hero_images_updated'));
+                          alert('¡Contenidos restablecidos por defecto!');
+                        }
+                      }}
+                      className="bg-[#d61219]/10 hover:bg-[#d61219]/20 text-[#d61219] px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">restore</span>
+                      <span>Restaurar Todo</span>
+                    </button>
+                  </div>
+
+                  {/* Section A: Cover Images */}
+                  <div className="space-y-4 bg-white p-5 rounded-2xl border border-[#39c0d3]/30">
+                    <h5 className="text-xs font-bold uppercase text-[#26170c] tracking-wider flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px] text-[#39c0d3]">image</span>
+                      <span>A. Imágenes de Portada (Masonry Grid - 4 fotos)</span>
+                    </h5>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        { key: 'pistachioRaspberry', label: '1. Pistachio Royale (Aspecto 4:5)' },
+                        { key: 'assortmentJars', label: '2. Spoonables Collection (Aspecto 1:1)' },
+                        { key: 'chocolateTopView', label: '3. Berry Velvet (Aspecto 1:1)' },
+                        { key: 'spoonBite', label: '4. Mango Passion (Aspecto 4:5)' }
+                      ].map((imgInfo) => {
+                        const currentVal = customHeroImages[imgInfo.key] || (HERO_IMAGES as any)[imgInfo.key];
+                        return (
+                          <div key={imgInfo.key} className="space-y-2 p-3 bg-[#fdf9f3] rounded-xl border border-gray-150">
+                            <span className="text-[11px] font-bold text-[#26170c] block">{imgInfo.label}</span>
+                            
+                            <div className="flex gap-3 items-center">
+                              <img
+                                src={currentVal}
+                                alt={imgInfo.key}
+                                className="w-12 h-12 rounded-lg object-cover border border-gray-200 shrink-0"
+                              />
+                              <div className="flex-1 space-y-1.5">
+                                <input
+                                  type="text"
+                                  value={customHeroImages[imgInfo.key] || ''}
+                                  onChange={(e) => {
+                                    const updated = { ...customHeroImages, [imgInfo.key]: e.target.value };
+                                    setCustomHeroImages(updated);
+                                    localStorage.setItem('crunqi_custom_hero_images', JSON.stringify(updated));
+                                    window.dispatchEvent(new Event('crunqi_hero_images_updated'));
+                                  }}
+                                  placeholder="Pegar URL de imagen..."
+                                  className="w-full bg-white border border-gray-200 rounded-lg p-1.5 text-[10px] outline-none focus:ring-1 focus:ring-[#39c0d3]"
+                                />
+                                <label className="inline-flex bg-[#26170c] hover:bg-[#39c0d3] hover:text-[#26170c] text-white px-2.5 py-1 rounded-md text-[9px] font-bold cursor-pointer transition-colors items-center gap-1">
+                                  <span className="material-symbols-outlined text-[12px]">upload</span>
+                                  <span>Subir Foto</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = (event) => {
+                                          const dataUrl = event.target?.result as string;
+                                          const updated = { ...customHeroImages, [imgInfo.key]: dataUrl };
+                                          setCustomHeroImages(updated);
+                                          localStorage.setItem('crunqi_custom_hero_images', JSON.stringify(updated));
+                                          window.dispatchEvent(new Event('crunqi_hero_images_updated'));
+                                        };
+                                        reader.readAsDataURL(file);
+                                      }
+                                    }}
+                                    className="hidden"
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section B: Web Texts */}
+                  <div className="space-y-4 bg-white p-5 rounded-2xl border border-[#39c0d3]/30">
+                    <div className="flex justify-between items-center border-b border-gray-150 pb-2">
+                      <h5 className="text-xs font-bold uppercase text-[#26170c] tracking-wider flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[16px] text-[#39c0d3]">translate</span>
+                        <span>B. Textos Principales de la Web</span>
+                      </h5>
+                      {/* Language selection tab */}
+                      <div className="flex bg-[#f7f3ed] rounded-lg p-0.5 border border-gray-200">
+                        <button
+                          type="button"
+                          onClick={() => setContentLang('es')}
+                          className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${
+                            contentLang === 'es'
+                              ? 'bg-[#39c0d3] text-[#26170c] shadow-xs'
+                              : 'text-[#4f453f] hover:bg-white/50'
+                          }`}
+                        >
+                          Español (ES)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setContentLang('en')}
+                          className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${
+                            contentLang === 'en'
+                              ? 'bg-[#39c0d3] text-[#26170c] shadow-xs'
+                              : 'text-[#4f453f] hover:bg-white/50'
+                          }`}
+                        >
+                          English (EN)
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Form grid for texts */}
+                    <div className="space-y-3.5 max-h-[350px] overflow-y-auto pr-1">
+                      {[
+                        { key: 'hero.badge', label: '1. Portada - Distintivo Superior (Badge)' },
+                        { key: 'hero.titlePart1', label: '2. Portada - Título Línea 1' },
+                        { key: 'hero.titlePart2', label: '3. Portada - Título Línea 2 (Itálica/Celeste)' },
+                        { key: 'hero.desc', label: '4. Portada - Descripción Principal', textarea: true },
+                        { key: 'story.title', label: '5. Historia - Título de Sección' },
+                        { key: 'story.p1', label: '6. Historia - Párrafo 1', textarea: true },
+                        { key: 'story.p2', label: '7. Historia - Párrafo 2', textarea: true },
+                        { key: 'story.philosophyText', label: '8. Historia - Filosofía de Sabor', textarea: true },
+                        { key: 'story.sourcingText', label: '9. Historia - Origen de Ingredientes', textarea: true },
+                        { key: 'story.quote', label: '10. Historia - Cita de Heidy', textarea: true }
+                      ].map((item) => {
+                        const currentVal = customTranslations[contentLang]?.[item.key] || '';
+                        return (
+                          <div key={item.key} className="space-y-1 text-xs">
+                            <label className="font-bold text-[#4f453f] block">{item.label}</label>
+                            {item.textarea ? (
+                              <textarea
+                                value={currentVal}
+                                onChange={(e) => updateTranslation(contentLang, item.key, e.target.value)}
+                                placeholder="Escribe el texto personalizado..."
+                                rows={3}
+                                className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-[#39c0d3] text-xs resize-y"
+                              />
+                            ) : (
+                              <input
+                                type="text"
+                                value={currentVal}
+                                onChange={(e) => updateTranslation(contentLang, item.key, e.target.value)}
+                                placeholder="Escribe el texto personalizado..."
+                                className="w-full bg-[#fdf9f3] border border-[#39c0d3]/20 rounded-xl p-2.5 outline-none focus:ring-1 focus:ring-[#39c0d3] text-xs"
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

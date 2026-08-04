@@ -13,6 +13,36 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const { language, t } = useLanguage();
 
+  const [heroImages, setHeroImages] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('crunqi_custom_hero_images');
+      return saved ? { ...HERO_IMAGES, ...JSON.parse(saved) } : HERO_IMAGES;
+    } catch {
+      return HERO_IMAGES;
+    }
+  });
+
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem('crunqi_custom_hero_images');
+        if (saved) {
+          setHeroImages({ ...HERO_IMAGES, ...JSON.parse(saved) });
+        } else {
+          setHeroImages(HERO_IMAGES);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('crunqi_hero_images_updated', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('crunqi_hero_images_updated', handleStorageChange);
+    };
+  }, []);
+
   const whatsappMsg = language === 'es'
     ? "¡Hola! Quisiera realizar un pedido de los postres artesanos CRUNQI Spoonable Jars."
     : "Hello! I'd like to place an order for CRUNQI Spoonable Jars.";
@@ -82,7 +112,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Image 1: Pistachio Raspberry Jar */}
               <div 
                 className="aspect-[4/5] rounded-3xl overflow-hidden soft-shadow bg-cover bg-center transition-transform duration-500 hover:scale-[1.02] border border-[#39c0d3]/10"
-                style={{ backgroundImage: `url('${HERO_IMAGES.pistachioRaspberry}')` }}
+                style={{ backgroundImage: `url('${heroImages.pistachioRaspberry}')` }}
               >
                 <div className="w-full h-full bg-gradient-to-t from-black/30 via-transparent to-transparent flex items-end p-4">
                   <span className="text-white text-xs font-semibold bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
@@ -94,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Image 2: Assortment Jars */}
               <div 
                 className="aspect-square rounded-3xl overflow-hidden soft-shadow bg-cover bg-center transition-transform duration-500 hover:scale-[1.02] border border-[#39c0d3]/10"
-                style={{ backgroundImage: `url('${HERO_IMAGES.assortmentJars}')` }}
+                style={{ backgroundImage: `url('${heroImages.assortmentJars}')` }}
               >
                 <div className="w-full h-full bg-gradient-to-t from-black/30 via-transparent to-transparent flex items-end p-4">
                   <span className="text-white text-xs font-semibold bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
@@ -105,10 +135,10 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             <div className="space-y-4">
-              {/* Image 3: Special Jar */}
+              {/* Image 3: Chocolate Top View */}
               <div 
                 className="aspect-square rounded-3xl overflow-hidden soft-shadow bg-cover bg-center transition-transform duration-500 hover:scale-[1.02] border border-[#39c0d3]/10"
-                style={{ backgroundImage: `url('${HERO_IMAGES.assortmentJars}')` }}
+                style={{ backgroundImage: `url('${heroImages.chocolateTopView}')` }}
               >
                 <div className="w-full h-full bg-gradient-to-t from-black/30 via-transparent to-transparent flex items-end p-4">
                   <span className="text-white text-xs font-semibold bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
@@ -117,10 +147,10 @@ export const Hero: React.FC<HeroProps> = ({
                 </div>
               </div>
 
-              {/* Image 4: Jar Detail */}
+              {/* Image 4: Spoon Bite */}
               <div 
                 className="aspect-[4/5] rounded-3xl overflow-hidden soft-shadow bg-cover bg-center transition-transform duration-500 hover:scale-[1.02] border border-[#39c0d3]/10"
-                style={{ backgroundImage: `url('${HERO_IMAGES.pistachioRaspberry}')` }}
+                style={{ backgroundImage: `url('${heroImages.spoonBite}')` }}
               >
                 <div className="w-full h-full bg-gradient-to-t from-black/30 via-transparent to-transparent flex items-end p-4">
                   <span className="text-white text-xs font-semibold bg-black/40 backdrop-blur-md px-3 py-1 rounded-full">
