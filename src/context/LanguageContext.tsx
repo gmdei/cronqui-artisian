@@ -12,7 +12,7 @@ interface LanguageContextType {
   customTranslations: Record<Language, Record<string, string>>;
 }
 
-const translations: Record<Language, Record<string, string>> = {
+export const translations: Record<Language, Record<string, string>> = {
   es: {
     // Header & Nav
     'nav.home': 'Inicio',

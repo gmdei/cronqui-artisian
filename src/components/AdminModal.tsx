@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { SpoonableFlavor, BatchInfo, ThemeSettings } from '../types';
 import { CURRENT_BATCH, HERO_IMAGES } from '../data/spoonables';
 import { verifyTOTP } from '../utils/totp';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage, translations } from '../context/LanguageContext';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -1362,7 +1362,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         { key: 'story.sourcingText', label: '9. Historia - Origen de Ingredientes', textarea: true },
                         { key: 'story.quote', label: '10. Historia - Cita de Heidy', textarea: true }
                       ].map((item) => {
-                        const currentVal = customTranslations[contentLang]?.[item.key] || '';
+                        const currentVal = customTranslations[contentLang]?.[item.key] !== undefined 
+                          ? customTranslations[contentLang][item.key] 
+                          : (translations[contentLang]?.[item.key] || '');
                         return (
                           <div key={item.key} className="space-y-1 text-xs">
                             <label className="font-bold text-[#4f453f] block">{item.label}</label>
