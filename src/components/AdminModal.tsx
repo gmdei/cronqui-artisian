@@ -1360,7 +1360,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         { key: 'story.p2', label: '7. Historia - Párrafo 2', textarea: true },
                         { key: 'story.philosophyText', label: '8. Historia - Filosofía de Sabor', textarea: true },
                         { key: 'story.sourcingText', label: '9. Historia - Origen de Ingredientes', textarea: true },
-                        { key: 'story.quote', label: '10. Historia - Cita de Heidy', textarea: true }
+                        { key: 'story.quote', label: '10. Historia - Cita de Heidy', textarea: true },
+                        { key: 'story.chefName', label: '11. Historia - Nombre de la Chef' },
+                        { key: 'story.chefTitle', label: '12. Historia - Cargo de la Chef' },
+                        { key: 'story.chefSub', label: '13. Historia - Subtítulo / Pie de Foto', textarea: true }
                       ].map((item) => {
                         const currentVal = customTranslations[contentLang]?.[item.key] !== undefined 
                           ? customTranslations[contentLang][item.key] 

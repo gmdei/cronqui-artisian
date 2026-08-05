@@ -156,7 +156,7 @@ export const SPOONABLES_FLAVORS: SpoonableFlavor[] = [
 export const CURRENT_BATCH: BatchInfo = {
   batchNumber: 'CRN-2026-08A',
   datePrepared: 'August 2, 2026',
-  masterPastryChef: 'Heidi Saratxaga',
+  masterPastryChef: 'Heidy Saratxaga',
   status: 'In Production',
   jarsAvailable: 42
 };

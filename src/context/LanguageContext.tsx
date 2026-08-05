@@ -60,14 +60,16 @@ export const translations: Record<Language, Record<string, string>> = {
     // Story Section
     'story.badge': 'Detrás de la Marca',
     'story.title': 'La Historia de CRUNQI™',
-    'story.p1': 'Fundada por la Maestra Repostera Heidi Saratxaga, CRUNQI nació del deseo de redefinir la alta repostería en un formato portátil, visualmente deslumbrante y profundamente delicioso.',
+    'story.p1': 'Fundada por la Maestra Repostera Heidy Saratxaga, CRUNQI nació del deseo de redefinir la alta repostería en un formato portátil, visualmente deslumbrante y profundamente delicioso.',
     'story.p2': 'Cada frasco de cristal "Spoonable" es ensamblado manualmente en lotes pequeños, utilizando únicamente ingredientes naturales, frutas seleccionadas, mantequillas puras y chocolate de origen.',
     'story.philosophy': 'Filosofía de Sabor',
     'story.sourcing': 'Origen de Ingredientes',
     'story.philosophyText': 'Creemos en el equilibrio perfecto entre la cremosidad suave y la textura crujiente. Menos azúcar refinada, más sabor auténtico.',
     'story.sourcingText': 'Frutas locales frescas, cacao de finca seleccionada y lácteos artesanales. Sin conservantes artificiales.',
     'story.quote': '"Un postre no es solo dulce; es una pausa para consentirte y conectar con los momentos felices."',
+    'story.chefName': 'Heidy Saratxaga',
     'story.chefTitle': 'Maestra Repostera y Fundadora',
+    'story.chefSub': 'Creado con Pasión por Heidy Saratxaga',
 
     // Customizer Modal
     'customizer.badge': 'Atelier CRUNQI™',
@@ -149,14 +151,16 @@ export const translations: Record<Language, Record<string, string>> = {
     // Story Section
     'story.badge': 'Behind the Brand',
     'story.title': 'The CRUNQI™ Story',
-    'story.p1': 'Founded by Master Pastry Chef Heidi Saratxaga, CRUNQI was born from the desire to redefine fine pastry in a portable, visually stunning, and deeply delicious format.',
+    'story.p1': 'Founded by Master Pastry Chef Heidy Saratxaga, CRUNQI was born from the desire to redefine fine pastry in a portable, visually stunning, and deeply delicious format.',
     'story.p2': 'Each "Spoonable" glass jar is hand-assembled in small batches using only natural ingredients, selected fruits, pure butter, and single-origin chocolate.',
     'story.philosophy': 'Flavor Philosophy',
     'story.sourcing': 'Ingredient Sourcing',
     'story.philosophyText': 'We believe in the perfect balance between smooth creaminess and satisfying crunch. Less refined sugar, more authentic flavor.',
     'story.sourcingText': 'Fresh local fruits, estate cocoa, and artisanal dairy. No artificial preservatives.',
     'story.quote': '"A dessert is not just sweet; it is a pause to pamper yourself and connect with happy moments."',
+    'story.chefName': 'Heidy Saratxaga',
     'story.chefTitle': 'Master Pastry Chef & Founder',
+    'story.chefSub': 'Crafted with Passion by Heidy Saratxaga',
 
     // Customizer Modal
     'customizer.badge': 'CRUNQI™ Atelier',

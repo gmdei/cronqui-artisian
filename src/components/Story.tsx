@@ -51,7 +51,7 @@ export const Story: React.FC<StoryProps> = ({ customPhotoUrl, onUpdatePhotoUrl }
             <img 
               src={imgSrc} 
               onError={handleImgError}
-              alt={language === 'es' ? "Heidi Saratxaga - Fundadora y Maestra Repostera de CRUNQI" : "Heidi Saratxaga - Founder & Master Pastry Chef of CRUNQI"}
+              alt={`${t('story.chefName')} - ${t('story.chefTitle')}`}
               className="w-full h-auto object-cover max-h-[520px] rounded-2xl"
               loading="lazy"
               referrerPolicy="no-referrer"
@@ -61,7 +61,7 @@ export const Story: React.FC<StoryProps> = ({ customPhotoUrl, onUpdatePhotoUrl }
 
             {/* Image Overlay Label */}
             <div className="absolute bottom-4 left-4 right-4 bg-[#26170c]/85 backdrop-blur-md text-white p-3 rounded-2xl text-center shadow-lg border border-white/20">
-              <span className="font-serif font-bold text-sm block">Heidi Saratxaga</span>
+              <span className="font-serif font-bold text-sm block">{t('story.chefName')}</span>
               <span className="text-[10px] text-[#39c0d3] uppercase tracking-widest font-semibold block">
                 {t('story.chefTitle')}
               </span>
@@ -87,7 +87,7 @@ export const Story: React.FC<StoryProps> = ({ customPhotoUrl, onUpdatePhotoUrl }
               {t('story.title')}
             </h2>
             <h3 className="text-xl sm:text-2xl font-serif font-medium text-[#39c0d3]">
-              {language === 'es' ? 'Creado con Pasión por Heidi Saratxaga' : 'Crafted with Passion by Heidi Saratxaga'}
+              {t('story.chefSub')}
             </h3>
           </div>
 
