@@ -3,6 +3,7 @@ import { SpoonableFlavor, BatchInfo, ThemeSettings } from '../types';
 import { CURRENT_BATCH, HERO_IMAGES } from '../data/spoonables';
 import { verifyTOTP } from '../utils/totp';
 import { useLanguage, translations } from '../context/LanguageContext';
+import { compressImage } from '../utils/imageCompressor';
 
 interface AdminModalProps {
   isOpen: boolean;
@@ -93,14 +94,44 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editProductState, setEditProductState] = useState<Partial<SpoonableFlavor>>({});
 
+  const processImageInput = async (input: File | string): Promise<string> => {
+    if (typeof input === 'string') {
+      if (input.startsWith('data:image/') && input.length > 50 * 1024) {
+        try {
+          return await compressImage(input);
+        } catch (e) {
+          console.error("Failed to compress base64 image:", e);
+        }
+      }
+      return input;
+    } else {
+      try {
+        return await compressImage(input);
+      } catch (e) {
+        console.error("Failed to compress uploaded file:", e);
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target?.result as string);
+          reader.readAsDataURL(input);
+        });
+      }
+    }
+  };
+
   const handleStartEdit = (flavor: SpoonableFlavor) => {
     setEditingId(flavor.id);
     setEditProductState(flavor);
   };
 
-  const handleSaveEdit = (id: string) => {
+  const handleSaveEdit = async (id: string) => {
     if (!editProductState.name || !editProductState.price) return;
-    const updated = flavors.map(f => f.id === id ? { ...f, ...editProductState } : f);
+    
+    let finalImage = editProductState.image || '';
+    if (finalImage.startsWith('data:image/')) {
+      finalImage = await processImageInput(finalImage);
+    }
+
+    const updated = flavors.map(f => f.id === id ? { ...f, ...editProductState, image: finalImage } : f);
     onUpdateFlavors(updated);
     setEditingId(null);
     setEditProductState({});
@@ -186,9 +217,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     }
   };
 
-  const handleAddProductSubmit = (e: React.FormEvent) => {
+  const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProduct.name || !newProduct.price) return;
+
+    let finalImage = newProduct.image || '';
+    if (finalImage.startsWith('data:image/')) {
+      finalImage = await processImageInput(finalImage);
+    }
 
     const createdItem: SpoonableFlavor = {
       id: `custom-prod-${Date.now()}`,
@@ -197,7 +233,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
       category: (newProduct.category as any) || 'fruit',
       description: newProduct.description || 'Delicioso postre en frasco en capas de crema y crujiente.',
       shortDescription: newProduct.description?.slice(0, 60),
-      image: newProduct.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxo3zAuTOcfsSataHEVO0imunoM6gQyPsJ9Xn-EDC2vYI7NTXsaQKK4Eeir1na7O2HxrUF8jO5Y90uAMg2Au0WqEZjJ6rPacu4YiX-urVrqO1tgpNcBwf6E4KvVQVcRxR9T2saMtYYbxPA0u-fLNWX1cLZtzqW4NcEe30doKjYyJ_CCfOsZgTD9KVGaQ_Mlk3SboLJCNuwtG79GlzDkEA0GoBLSThxgQXYbRI0NGLxxE4b5xoSUPHh',
+      image: finalImage || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxo3zAuTOcfsSataHEVO0imunoM6gQyPsJ9Xn-EDC2vYI7NTXsaQKK4Eeir1na7O2HxrUF8jO5Y90uAMg2Au0WqEZjJ6rPacu4YiX-urVrqO1tgpNcBwf6E4KvVQVcRxR9T2saMtYYbxPA0u-fLNWX1cLZtzqW4NcEe30doKjYyJ_CCfOsZgTD9KVGaQ_Mlk3SboLJCNuwtG79GlzDkEA0GoBLSThxgQXYbRI0NGLxxE4b5xoSUPHh',
       badge: newProduct.badge || 'Nuevo',
       tags: newProduct.tags || ['Artisanal'],
       layers: newProduct.layers || ['Capa de Crema', 'Sponge', 'Crumble'],
@@ -578,15 +614,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (event) => {
-                                const dataUrl = event.target?.result as string;
-                                onUpdateThemeSettings({ ...themeSettings, heroBannerImage: dataUrl });
-                              };
-                              reader.readAsDataURL(file);
+                              const compressed = await processImageInput(file);
+                              onUpdateThemeSettings({ ...themeSettings, heroBannerImage: compressed });
                             }
                           }}
                           className="hidden"
@@ -614,15 +646,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (event) => {
-                                const dataUrl = event.target?.result as string;
-                                onUpdateThemeSettings({ ...themeSettings, heidiPhotoUrl: dataUrl });
-                              };
-                              reader.readAsDataURL(file);
+                              const compressed = await processImageInput(file);
+                              onUpdateThemeSettings({ ...themeSettings, heidiPhotoUrl: compressed });
                             }
                           }}
                           className="hidden"
@@ -763,15 +791,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => {
+                            onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                const reader = new FileReader();
-                                reader.onload = (event) => {
-                                  const dataUrl = event.target?.result as string;
-                                  setNewProduct({ ...newProduct, image: dataUrl });
-                                };
-                                reader.readAsDataURL(file);
+                                const compressed = await processImageInput(file);
+                                setNewProduct({ ...newProduct, image: compressed });
                               }
                             }}
                             className="hidden"
@@ -881,15 +905,11 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                                   <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => {
+                                    onChange={async (e) => {
                                       const file = e.target.files?.[0];
                                       if (file) {
-                                        const reader = new FileReader();
-                                        reader.onload = (event) => {
-                                          const dataUrl = event.target?.result as string;
-                                          setEditProductState({ ...editProductState, image: dataUrl });
-                                        };
-                                        reader.readAsDataURL(file);
+                                        const compressed = await processImageInput(file);
+                                        setEditProductState({ ...editProductState, image: compressed });
                                       }
                                     }}
                                     className="hidden"
@@ -1289,18 +1309,19 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                                   <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) => {
+                                    onChange={async (e) => {
                                       const file = e.target.files?.[0];
                                       if (file) {
-                                        const reader = new FileReader();
-                                        reader.onload = (event) => {
-                                          const dataUrl = event.target?.result as string;
-                                          const updated = { ...customHeroImages, [imgInfo.key]: dataUrl };
-                                          setCustomHeroImages(updated);
+                                        const compressed = await processImageInput(file);
+                                        const updated = { ...customHeroImages, [imgInfo.key]: compressed };
+                                        setCustomHeroImages(updated);
+                                        try {
                                           localStorage.setItem('crunqi_custom_hero_images', JSON.stringify(updated));
-                                          window.dispatchEvent(new Event('crunqi_hero_images_updated'));
-                                        };
-                                        reader.readAsDataURL(file);
+                                        } catch (err) {
+                                          console.error("Failed to save custom hero images:", err);
+                                          alert("No se pudo guardar la imagen de portada por falta de espacio en el navegador.");
+                                        }
+                                        window.dispatchEvent(new Event('crunqi_hero_images_updated'));
                                       }
                                     }}
                                     className="hidden"

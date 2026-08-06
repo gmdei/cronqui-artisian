@@ -26,11 +26,36 @@ export default function App() {
     }
   });
 
+  const validateFlavors = (data: any): SpoonableFlavor[] => {
+    if (!Array.isArray(data)) return SPOONABLES_FLAVORS;
+    return data.map((item: any) => {
+      return {
+        id: item.id || `custom-prod-${Date.now()}-${Math.random()}`,
+        name: item.name || 'Postre sin nombre',
+        badge: item.badge || '',
+        isBestseller: !!item.isBestseller,
+        isGlutenFree: !!item.isGlutenFree,
+        category: ['fruit', 'citrus', 'rich', 'special'].includes(item.category) ? item.category : 'fruit',
+        description: item.description || '',
+        shortDescription: item.shortDescription || item.description?.slice(0, 60) || '',
+        tags: Array.isArray(item.tags) ? item.tags : ['Artisanal'],
+        layers: Array.isArray(item.layers) ? item.layers : ['Capa de Crema', 'Sponge', 'Crumble'],
+        ingredients: Array.isArray(item.ingredients) ? item.ingredients : ['Ingredientes Selectos'],
+        price: typeof item.price === 'number' && !isNaN(item.price) ? item.price : 9.50,
+        image: item.image || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxo3zAuTOcfsSataHEVO0imunoM6gQyPsJ9Xn-EDC2vYI7NTXsaQKK4Eeir1na7O2HxrUF8jO5Y90uAMg2Au0WqEZjJ6rPacu4YiX-urVrqO1tgpNcBwf6E4KvVQVcRxR9T2saMtYYbxPA0u-fLNWX1cLZtzqW4NcEe30doKjYyJ_CCfOsZgTD9KVGaQ_Mlk3SboLJCNuwtG79GlzDkEA0GoBLSThxgQXYbRI0NGLxxE4b5xoSUPHh',
+        calories: typeof item.calories === 'number' ? item.calories : 340,
+        rating: typeof item.rating === 'number' ? item.rating : 5.0,
+        reviewsCount: typeof item.reviewsCount === 'number' ? item.reviewsCount : 1,
+        stock: typeof item.stock === 'number' ? item.stock : 12
+      };
+    });
+  };
+
   // Flavors state with localStorage persistence
   const [flavors, setFlavors] = useState<SpoonableFlavor[]>(() => {
     try {
       const saved = localStorage.getItem('crunqi_flavors');
-      return saved ? JSON.parse(saved) : SPOONABLES_FLAVORS;
+      return saved ? validateFlavors(JSON.parse(saved)) : SPOONABLES_FLAVORS;
     } catch {
       return SPOONABLES_FLAVORS;
     }
@@ -59,17 +84,32 @@ export default function App() {
 
   // Persist Theme
   useEffect(() => {
-    localStorage.setItem('crunqi_theme', JSON.stringify(themeSettings));
+    try {
+      localStorage.setItem('crunqi_theme', JSON.stringify(themeSettings));
+    } catch (e) {
+      console.error("Failed to save theme settings to localStorage:", e);
+    }
   }, [themeSettings]);
 
   // Persist Flavors Catalog
   useEffect(() => {
-    localStorage.setItem('crunqi_flavors', JSON.stringify(flavors));
+    try {
+      localStorage.setItem('crunqi_flavors', JSON.stringify(flavors));
+    } catch (e) {
+      console.error("Failed to save flavors to localStorage:", e);
+      if (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')) {
+        alert("¡Error de espacio en el navegador! No se pudieron guardar todos los productos porque algunas imágenes de producto son demasiado grandes. Se ha activado la compresión en subidas nuevas para evitar esto.");
+      }
+    }
   }, [flavors]);
 
   // Persist Cart
   useEffect(() => {
-    localStorage.setItem('crunqi_cart', JSON.stringify(cartItems));
+    try {
+      localStorage.setItem('crunqi_cart', JSON.stringify(cartItems));
+    } catch (e) {
+      console.error("Failed to save cart to localStorage:", e);
+    }
   }, [cartItems]);
 
   const showToast = (msg: string) => {
