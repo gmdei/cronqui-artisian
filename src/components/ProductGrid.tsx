@@ -1,6 +1,7 @@
 import React from 'react';
 import { SpoonableFlavor } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import templateConfig from '../config/template.config.json';
 
 interface ProductGridProps {
   flavors: SpoonableFlavor[];
@@ -16,6 +17,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
   whatsappNumber = "+15551234567"
 }) => {
   const { language, t } = useLanguage();
+  const showCart = templateConfig.features.showShoppingCart;
 
   if (flavors.length === 0) {
     return (
@@ -38,8 +40,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
       {flavors.map((flavor) => {
         const whatsappMsg = encodeURIComponent(
           language === 'es'
-            ? `¡Hola equipo CRUNQI! Quisiera ordenar el frasco Spoonable ${flavor.name} ($${flavor.price.toFixed(2)}).`
-            : `Hi CRUNQI team! I would like to order the ${flavor.name} ($${flavor.price.toFixed(2)}) spoonable jar.`
+            ? `¡Hola equipo ${templateConfig.businessName}! Quisiera ordenar el frasco Spoonable ${flavor.name} ($${flavor.price.toFixed(2)}).`
+            : `Hi ${templateConfig.businessName} team! I would like to order the ${flavor.name} ($${flavor.price.toFixed(2)}) spoonable jar.`
         );
         const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${whatsappMsg}`;
 
@@ -123,7 +125,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto">
+              <div className={showCart ? "grid grid-cols-1 sm:grid-cols-2 gap-3 mt-auto" : "flex mt-auto"}>
                 <a
                   href={flavor.stock !== undefined && flavor.stock <= 0 ? '#' : whatsappUrl}
                   onClick={(e) => flavor.stock !== undefined && flavor.stock <= 0 && e.preventDefault()}
@@ -139,20 +141,22 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
                   <span>{language === 'es' ? 'Pedir por WhatsApp' : 'Order This Flavor'}</span>
                 </a>
 
-                <button
-                  onClick={() => onAddToCart(flavor)}
-                  disabled={flavor.stock !== undefined && flavor.stock <= 0}
-                  className={`w-full py-3.5 rounded-2xl font-semibold text-xs text-center flex items-center justify-center gap-1.5 shadow-xs transition-colors ${
-                    flavor.stock !== undefined && flavor.stock <= 0
-                      ? 'bg-gray-150 text-gray-400 border border-gray-200 cursor-not-allowed'
-                      : 'bg-white text-[#26170c] border border-[#39c0d3]/40 hover:bg-[#39c0d3] hover:text-white'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-[16px]">
-                    {flavor.stock !== undefined && flavor.stock <= 0 ? 'block' : 'add_shopping_cart'}
-                  </span>
-                  <span>{flavor.stock !== undefined && flavor.stock <= 0 ? (language === 'es' ? 'Agotado' : 'Sold Out') : t('products.btnAdd')}</span>
-                </button>
+                {showCart && (
+                  <button
+                    onClick={() => onAddToCart(flavor)}
+                    disabled={flavor.stock !== undefined && flavor.stock <= 0}
+                    className={`w-full py-3.5 rounded-2xl font-semibold text-xs text-center flex items-center justify-center gap-1.5 shadow-xs transition-colors ${
+                      flavor.stock !== undefined && flavor.stock <= 0
+                        ? 'bg-gray-150 text-gray-400 border border-gray-200 cursor-not-allowed'
+                        : 'bg-white text-[#26170c] border border-[#39c0d3]/40 hover:bg-[#39c0d3] hover:text-white'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[16px]">
+                      {flavor.stock !== undefined && flavor.stock <= 0 ? 'block' : 'add_shopping_cart'}
+                    </span>
+                    <span>{flavor.stock !== undefined && flavor.stock <= 0 ? (language === 'es' ? 'Agotado' : 'Sold Out') : t('products.btnAdd')}</span>
+                  </button>
+                )}
               </div>
 
             </div>

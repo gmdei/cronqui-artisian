@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LOGO_URL } from '../data/spoonables';
 import { useLanguage } from '../context/LanguageContext';
+import templateConfig from '../config/template.config.json';
 
 interface HeaderProps {
   cartCount: number;
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const lang = (language === 'es' || language === 'en') ? language : 'es';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,9 +35,20 @@ export const Header: React.FC<HeaderProps> = ({
 
   const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
     language === 'es' 
-      ? "¡Hola equipo CRUNQI! Quisiera consultar sobre los postres artesanales."
-      : "Hello CRUNQI team! I would like to inquire about your handcrafted desserts."
+      ? `¡Hola equipo ${templateConfig.businessName}! Quisiera consultar sobre los postres artesanales.`
+      : `Hello ${templateConfig.businessName} team! I would like to inquire about your handcrafted desserts.`
   )}`;
+
+  const logoImg = templateConfig.logos.headerUrl || LOGO_URL;
+  const showCart = templateConfig.features.showShoppingCart;
+
+  // Filter menu items based on active features
+  const menuItems = templateConfig.menu.items.filter(item => {
+    if (item.targetId === 'story' && !templateConfig.features.showChefStory) return false;
+    if (item.targetId === 'faq' && !templateConfig.features.showFAQ) return false;
+    if (item.targetId === 'location' && !templateConfig.features.showMap) return false;
+    return true;
+  });
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${
@@ -47,8 +60,8 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand Logo */}
         <a href="#hero" className="flex items-center group">
           <img 
-            src={LOGO_URL} 
-            alt="CRUNQI Logo" 
+            src={logoImg} 
+            alt={`${templateConfig.businessName} Logo`} 
             className="h-[48px] md:h-[54px] w-auto transition-transform duration-300 group-hover:scale-105"
           />
         </a>
@@ -61,25 +74,22 @@ export const Header: React.FC<HeaderProps> = ({
           >
             {t('nav.home')}
           </a>
-          <a 
-            href="#spoonables" 
-            className="text-sm font-semibold text-[#d61219] hover:text-[#39c0d3] transition-colors flex items-center gap-1"
-          >
-            <span className="material-symbols-outlined text-[16px]">grid_view</span>
-            {t('nav.spoonables')}
-          </a>
-          <a 
-            href="#story" 
-            className="text-sm font-medium text-[#4f453f] hover:text-[#39c0d3] transition-colors"
-          >
-            {t('nav.story')}
-          </a>
-          <a 
-            href="#contact" 
-            className="text-sm font-medium text-[#4f453f] hover:text-[#39c0d3] transition-colors"
-          >
-            {t('nav.contact')}
-          </a>
+          
+          {menuItems.map((item, idx) => {
+            const isHighlight = item.targetId === 'spoonables';
+            return (
+              <a
+                key={idx}
+                href={`#${item.targetId}`}
+                className={`text-sm hover:text-[#39c0d3] transition-colors flex items-center gap-1 ${
+                  isHighlight ? 'font-semibold text-[#d61219]' : 'font-medium text-[#4f453f]'
+                }`}
+              >
+                {isHighlight && <span className="material-symbols-outlined text-[16px]">grid_view</span>}
+                <span>{item.label[lang]}</span>
+              </a>
+            );
+          })}
         </div>
 
         {/* Right CTA Actions */}
@@ -110,22 +120,22 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-
-
           {/* Cart Icon Button */}
-          <button
-            onClick={onOpenCart}
-            className="relative p-2 text-[#26170c] hover:text-[#39c0d3] hover:bg-[#39c0d3]/10 rounded-full transition-colors flex items-center justify-center"
-            aria-label="View Order Cart"
-            id="cartButton"
-          >
-            <span className="material-symbols-outlined text-2xl">shopping_bag</span>
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#d61219] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-bounce">
-                {cartCount}
-              </span>
-            )}
-          </button>
+          {showCart && (
+            <button
+              onClick={onOpenCart}
+              className="relative p-2 text-[#26170c] hover:text-[#39c0d3] hover:bg-[#39c0d3]/10 rounded-full transition-colors flex items-center justify-center"
+              aria-label="View Order Cart"
+              id="cartButton"
+            >
+              <span className="material-symbols-outlined text-2xl">shopping_bag</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#d61219] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-bounce">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* WhatsApp Order Button */}
           <a
@@ -161,20 +171,22 @@ export const Header: React.FC<HeaderProps> = ({
           >
             {t('nav.home')}
           </a>
-          <a
-            href="#spoonables"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-semibold text-[#d61219] hover:text-[#39c0d3]"
-          >
-            {t('nav.spoonables')}
-          </a>
-          <a
-            href="#story"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-base font-medium text-[#1c1c18] hover:text-[#39c0d3]"
-          >
-            {t('nav.story')}
-          </a>
+          
+          {menuItems.map((item, idx) => {
+            const isHighlight = item.targetId === 'spoonables';
+            return (
+              <a
+                key={idx}
+                href={`#${item.targetId}`}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block text-base hover:text-[#39c0d3] ${
+                  isHighlight ? 'font-semibold text-[#d61219]' : 'font-medium text-[#1c1c18]'
+                }`}
+              >
+                {item.label[lang]}
+              </a>
+            );
+          })}
         </div>
       )}
     </header>

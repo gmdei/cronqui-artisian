@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SpoonableFlavor } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import templateConfig from '../config/template.config.json';
 
 interface FlavorDetailModalProps {
   flavor: SpoonableFlavor | null;
@@ -16,6 +17,7 @@ export const FlavorDetailModal: React.FC<FlavorDetailModalProps> = ({
   whatsappNumber = "+15551234567"
 }) => {
   const { language, t } = useLanguage();
+  const showCart = templateConfig.features.showShoppingCart;
 
   if (!flavor) return null;
 
@@ -28,8 +30,8 @@ export const FlavorDetailModal: React.FC<FlavorDetailModalProps> = ({
   const handleWhatsAppOrder = () => {
     const msg = encodeURIComponent(
       language === 'es'
-        ? `¡Hola equipo CRUNQI! Quisiera ordenar ${quantity}x ${flavor.name} [Tamaño: ${selectedSize}] - Total: $${currentPrice.toFixed(2)}`
-        : `Hi CRUNQI team! I would like to order ${quantity}x ${flavor.name} [Size: ${selectedSize}] - Total: $${currentPrice.toFixed(2)}`
+        ? `¡Hola equipo ${templateConfig.businessName}! Quisiera ordenar ${quantity}x ${flavor.name} [Tamaño: ${selectedSize}] - Total: $${currentPrice.toFixed(2)}`
+        : `Hi ${templateConfig.businessName} team! I would like to order ${quantity}x ${flavor.name} [Size: ${selectedSize}] - Total: $${currentPrice.toFixed(2)}`
     );
     window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${msg}`, '_blank');
   };
@@ -160,24 +162,26 @@ export const FlavorDetailModal: React.FC<FlavorDetailModalProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => {
-                  onAddToCart(flavor, quantity, selectedSize);
-                  onClose();
-                }}
-                className="bg-[#26170c] text-white py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-[#39c0d3] hover:text-[#26170c] active:scale-95 transition-all shadow-sm"
-              >
-                <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                <span>{t('products.btnAdd')}</span>
-              </button>
+            <div className={showCart ? "grid grid-cols-2 gap-3" : "flex"}>
+              {showCart && (
+                <button
+                  onClick={() => {
+                    onAddToCart(flavor, quantity, selectedSize);
+                    onClose();
+                  }}
+                  className="bg-[#26170c] text-white py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-[#39c0d3] hover:text-[#26170c] active:scale-95 transition-all shadow-sm flex-1"
+                >
+                  <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                  <span>{t('products.btnAdd')}</span>
+                </button>
+              )}
 
               <button
                 onClick={handleWhatsAppOrder}
-                className="bg-[#d61219] text-white py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-[#b00e14] active:scale-95 transition-all shadow-sm"
+                className="bg-[#d61219] text-white py-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-[#b00e14] active:scale-95 transition-all shadow-sm flex-1"
               >
                 <span className="material-symbols-outlined text-[18px]">chat</span>
-                <span>WhatsApp</span>
+                <span>{language === 'es' ? 'Pedir por WhatsApp' : 'WhatsApp'}</span>
               </button>
             </div>
           </div>

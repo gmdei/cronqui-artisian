@@ -1,0 +1,121 @@
+{
+  "businessName": "CRUNQI",
+  "logos": {
+    "headerUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuCh8tg73y5qFpdWDR2JwYbzAtHy0Lq7WXwjeprICXyg1rNhxyo-HujVQazgoNXHup3RsxGKGVyEAurTNBmJ77bE3LXFPKZ5BM8TGet6t6lHxSXbgc-dw_dCKWrkZOvA7pCtCnwXx3UIQexww9EGdc8Be034htLA0E5_ezZxO5ZrfIiApWSwEA2-f6aMfPCsqxpKvArJ0kTROVNWGo7zFhjm3EXxBbvOYQMwlnXc6IPMsi7XeSuKKkhHhEmXUQFGbFrp1Q",
+    "footerUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDaUfm6Sn_qHwKQV3Un7pCCIO0KfEhkzx9UYFHWiTcdhRdnWKMTpgDoT7bF426KKl2mfaSVutEnfzTbqeTAH9hLr8gk6AUI8wZ_tFpJbKbZOj5kHljsy-_t9xy80-2FeF-mYhWFIHdDRkjS3SpDZlVFvcLHLtok3qlqa_Wq3LFYDqAFeXFBG0qBzKO1pd664AnMRaS89jI2Aaxy4LtcIZhqv_2m1wWhDHRG3Sftj4W4eFjK2tf5eFAVrhonyDZ4C32qwQ"
+  },
+  "features": {
+    "showShoppingCart": true,
+    "showNewsletter": true,
+    "showChefStory": true,
+    "showFAQ": true,
+    "showMap": true
+  },
+  "menu": {
+    "items": [
+      {
+        "label": {
+          "es": "Colección",
+          "en": "Collection"
+        },
+        "targetId": "spoonables"
+      },
+      {
+        "label": {
+          "es": "Nuestra Historia",
+          "en": "Our Story"
+        },
+        "targetId": "story"
+      },
+      {
+        "label": {
+          "es": "Preguntas Frecuentes",
+          "en": "FAQ"
+        },
+        "targetId": "faq"
+      },
+      {
+        "label": {
+          "es": "Ubicación",
+          "en": "Location"
+        },
+        "targetId": "location"
+      }
+    ]
+  },
+  "sectionTexts": {
+    "spoonables": {
+      "title": {
+        "es": "Nuestra Colección",
+        "en": "Our Collection"
+      },
+      "subtitle": {
+        "es": "Postres artesanales en capas elaborados con ingredientes frescos de la más alta calidad",
+        "en": "Artisanal layered desserts crafted with fresh, premium ingredients"
+      }
+    },
+    "faq": {
+      "title": {
+        "es": "Preguntas Frecuentes",
+        "en": "Frequently Asked Questions"
+      },
+      "subtitle": {
+        "es": "Todo lo que necesitas saber sobre nuestros pedidos y envíos",
+        "en": "Everything you need to know about our orders and delivery"
+      }
+    },
+    "location": {
+      "title": {
+        "es": "Nuestra Tienda",
+        "en": "Our Shop"
+      },
+      "subtitle": {
+        "es": "Visítanos o haz tu pedido directo para recoger en tienda",
+        "en": "Visit us or place an order directly for pickup"
+      }
+    }
+  },
+  "faqs": [
+    {
+      "question": {
+        "es": "¿Cómo realizo un pedido?",
+        "en": "How do I place an order?"
+      },
+      "answer": {
+        "es": "Puedes armar tu carrito de compras directamente en nuestra web y, al finalizar, hacer clic en el botón de WhatsApp. Esto generará un mensaje automático con tu pedido listo para enviarnos.",
+        "en": "You can build your cart directly on our website and, when finished, click the WhatsApp button. This will generate an automatic message with your order details ready to send to us."
+      }
+    },
+    {
+      "question": {
+        "es": "¿Con cuánta anticipación debo hacer mi pedido?",
+        "en": "How far in advance should I order?"
+      },
+      "answer": {
+        "es": "Recomendamos hacer los pedidos con al menos 24 a 48 horas de anticipación, ya que nuestros postres se elaboran de forma artesanal y en lotes pequeños diariamente.",
+        "en": "We recommend placing your order at least 24 to 48 hours in advance, as our desserts are handcrafted in small daily batches."
+      }
+    },
+    {
+      "question": {
+        "es": "¿Ofrecen opciones sin gluten?",
+        "en": "Do you offer gluten-free options?"
+      },
+      "answer": {
+        "es": "Sí, contamos con opciones identificadas como libres de gluten. Puedes ver la etiqueta en el catálogo de productos o filtrarlos por categoría.",
+        "en": "Yes, we have options labeled as gluten-free. You can view the tags in the product catalog or filter them by category."
+      }
+    }
+  ],
+  "locationInfo": {
+    "address": {
+      "es": "Calle Dulce Amanecer 123, Ciudad de la Repostería",
+      "en": "123 Sweet Sunrise Street, Pastry City"
+    },
+    "hours": {
+      "es": "Lunes a Sábado: 9:00 AM - 7:00 PM | Domingo: Cerrado",
+      "en": "Monday to Saturday: 9:00 AM - 7:00 PM | Sunday: Closed"
+    },
+    "mapEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.428257005886!2d-73.98731968459383!3d40.75797477932681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25859c1b97bfb%3A0xe104dfc168f63934!2sTimes%20Square!5e0!3m2!1sen!2sus!4v1650000000000!5m2!1sen!2sus"
+  }
+}

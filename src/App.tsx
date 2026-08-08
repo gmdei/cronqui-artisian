@@ -12,9 +12,12 @@ import { Newsletter } from './components/Newsletter';
 import { Footer } from './components/Footer';
 import { AdminModal } from './components/AdminModal';
 import { CartDrawer } from './components/CartDrawer';
+import templateConfig from './config/template.config.json';
+import { FAQ } from './components/FAQ';
+import { MapSection } from './components/MapSection';
 
 export default function App() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   // Theme Settings state with localStorage persistence
   const [themeSettings, setThemeSettings] = useState<ThemeSettings>(() => {
@@ -203,11 +206,11 @@ export default function App() {
         <section id="spoonables" className="py-20 md:py-24 max-w-[1280px] mx-auto px-5 md:px-16 w-full scroll-mt-16">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-4xl sm:text-5xl font-serif font-bold text-[#26170c] tracking-tight">
-              {t('spoonables.title')}
+              {templateConfig.sectionTexts.spoonables.title[language as 'es' | 'en'] || t('spoonables.title')}
             </h2>
             <div className="w-24 h-1.5 bg-[#39c0d3] mx-auto rounded-full" />
             <p className="text-base sm:text-lg text-[#4f453f] max-w-2xl mx-auto leading-relaxed">
-              {t('spoonables.subtitle')}
+              {templateConfig.sectionTexts.spoonables.subtitle[language as 'es' | 'en'] || t('spoonables.subtitle')}
             </p>
           </div>
 
@@ -227,13 +230,27 @@ export default function App() {
         </section>
 
         {/* Story Section */}
-        <Story 
-          customPhotoUrl={themeSettings.heidiPhotoUrl}
-          onUpdatePhotoUrl={(url) => setThemeSettings(prev => ({ ...prev, heidiPhotoUrl: url }))}
-        />
+        {templateConfig.features.showChefStory && (
+          <Story 
+            customPhotoUrl={themeSettings.heidiPhotoUrl}
+            onUpdatePhotoUrl={(url) => setThemeSettings(prev => ({ ...prev, heidiPhotoUrl: url }))}
+          />
+        )}
 
         {/* Newsletter Signup */}
-        <Newsletter apiUrl={themeSettings.newsletterApiUrl} />
+        {templateConfig.features.showNewsletter && (
+          <Newsletter apiUrl={themeSettings.newsletterApiUrl} />
+        )}
+
+        {/* Optional FAQ Section */}
+        {templateConfig.features.showFAQ && (
+          <FAQ />
+        )}
+
+        {/* Optional Map / Location Section */}
+        {templateConfig.features.showMap && (
+          <MapSection />
+        )}
 
       </main>
 
@@ -253,18 +270,18 @@ export default function App() {
         whatsappNumber={themeSettings.whatsappNumber}
       />
 
-
-
       {/* Cart Drawer */}
-      <CartDrawer
-        isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
-        items={cartItems}
-        onUpdateQuantity={handleUpdateCartQuantity}
-        onRemoveItem={handleRemoveCartItem}
-        onClearCart={handleClearCart}
-        whatsappNumber={themeSettings.whatsappNumber}
-      />
+      {templateConfig.features.showShoppingCart && (
+        <CartDrawer
+          isOpen={cartOpen}
+          onClose={() => setCartOpen(false)}
+          items={cartItems}
+          onUpdateQuantity={handleUpdateCartQuantity}
+          onRemoveItem={handleRemoveCartItem}
+          onClearCart={handleClearCart}
+          whatsappNumber={themeSettings.whatsappNumber}
+        />
+      )}
 
       {/* Admin / Control Panel Modal */}
       <AdminModal
