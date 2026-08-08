@@ -1,0 +1,83 @@
+# Guía de Uso: Plantilla Web Modular de Marca Blanca
+
+Esta guía te explica paso a paso cómo utilizar y personalizar esta plantilla web para nuevos clientes sin necesidad de programar.
+
+---
+
+## 🚀 1. Instalación Inicial (Primeros Pasos)
+
+Para comenzar un proyecto nuevo a partir de este archivo ZIP:
+
+1. **Descomprimir:** Extrae el contenido de este archivo ZIP en una carpeta nueva en tu computadora.
+2. **Abrir Terminal:** Abre una terminal de comandos (o VS Code) en la ruta de tu nueva carpeta.
+3. **Instalar Dependencias:** Ejecuta el siguiente comando para descargar las herramientas web necesarias:
+   ```bash
+   npm install
+   ```
+4. **Probar Localmente:** Ejecuta el servidor de pruebas para ver la web en tu navegador:
+   ```bash
+   npm run dev
+   ```
+   *(La terminal te dará una dirección como `http://localhost:3000` para abrirla en tu navegador).*
+
+---
+
+## 🎨 2. Personalización de Marca (Sin Programar)
+
+Toda la estructura visual y comportamiento de la web se controlan desde un único archivo de configuración:
+👉 **`src/config/template.config.json`**
+
+Abre este archivo en cualquier editor de texto y edita los siguientes parámetros:
+
+### A. Datos del Negocio
+* `"businessName"`: Escribe el nombre comercial de la pastelería (ej. `"DULCES RECUERDOS"`).
+* `"logos"`: Pega las URLs de las imágenes de logotipo:
+  - `"headerUrl"`: Logo de la cabecera superior.
+  - `"footerUrl"`: Logo del pie de página.
+
+### B. Activar/Desactivar Módulos (`features`)
+Cambia el valor a `true` (activar) o `false` (desactivar) según el cliente:
+* `"showShoppingCart"`: Si es `false`, la web se convierte en un catálogo de exhibición pura (oculta carrito y bolsa, y los botones de compra se transforman en "Pedir por WhatsApp" directo).
+* `"showFAQ"`: Muestra/oculta la sección interactiva de Preguntas Frecuentes.
+* `"showMap"`: Muestra/oculta el bloque de ubicación con Google Maps.
+* `"showChefStory"`: Muestra/oculta la sección de la historia personal/Chef.
+* `"showNewsletter"`: Muestra/oculta el bloque de suscripción de correos.
+
+### C. Personalizar el Menú de Navegación (`menu`)
+Dentro de `"items"`, puedes añadir, quitar o renombrar las secciones a las que los usuarios irán al hacer clic en el menú. Recuerda modificar la traducción tanto en `"es"` (Español) como en `"en"` (Inglés).
+
+### D. Títulos de Secciones, Preguntas Frecuentes y Ubicación
+* `"sectionTexts"`: Modifica los títulos y subtítulos de las secciones.
+* `"faqs"`: Escribe aquí la lista de preguntas y respuestas.
+* `"locationInfo"`: Configura la dirección física, los horarios comerciales y la URL del mapa incrustado de Google Maps (`mapEmbedUrl`).
+
+---
+
+## 🔑 3. Configuración del Cliente Final (Admin Panel)
+
+Cuando subas la página a internet, el dueño del negocio (tu cliente) podrá administrar sus productos y redes sociales de forma autónoma:
+
+1. **Acceso al Panel:** En el pie de página, haz clic en el icono del candado 🔒 y entra con una cuenta de Gmail previamente autorizada.
+2. **¿Qué puede cambiar el cliente?**
+   - Crear, editar o eliminar productos (nombres, precios, fotos, stock, etc.).
+   - Cambiar su número de WhatsApp receptor de pedidos.
+   - Configurar la plantilla del mensaje automático que recibe en su móvil.
+   - Cambiar enlaces de Instagram y Facebook.
+   - Poner su URL de **Google Sheets** para guardar las suscripciones del Newsletter automáticamente.
+
+---
+
+## 🌐 4. Despliegue y Subida a Internet (Hosting)
+
+Cuando la web esté personalizada y lista para subirse:
+
+1. **Compilar:** Genera los archivos finales listos para el servidor ejecutando:
+   ```bash
+   npm run build
+   ```
+2. **Generación de la Web:** Esto creará una carpeta llamada `/dist` que contiene los archivos finales HTML, CSS, JS y el archivo de redirección `.htaccess` para servidores Apache.
+3. **Subir al Hosting:**
+   - Comprime el contenido de la carpeta `/dist` en un archivo `.zip`.
+   - Entra al Gestor de Archivos de tu hosting (ej. SiteGround) en la carpeta principal `public_html`.
+   - Sube el ZIP y descomprímelo (Extract).
+   - ¡Tu web estará lista y en vivo con HTTPS seguro!
