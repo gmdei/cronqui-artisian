@@ -55,5 +55,6 @@ export interface ThemeSettings {
   whatsappMessageTemplate: string;
   instagramUrl?: string;
   facebookUrl?: string;
+  newsletterApiUrl?: string;
 }
 

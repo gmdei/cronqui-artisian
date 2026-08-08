@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 
-export const Newsletter: React.FC = () => {
+interface NewsletterProps {
+  apiUrl?: string;
+}
+
+export const Newsletter: React.FC<NewsletterProps> = ({ apiUrl }) => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -15,20 +19,34 @@ export const Newsletter: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const apiUrl = import.meta.env.VITE_NEWSLETTER_API_URL;
+    const finalApiUrl = apiUrl || import.meta.env.VITE_NEWSLETTER_API_URL;
 
-    if (apiUrl) {
+    if (finalApiUrl) {
       try {
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: email.trim() }),
-        });
+        const isGoogleScript = finalApiUrl.includes('script.google.com');
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+        if (isGoogleScript) {
+          // Google Apps Script doesn't return CORS headers on redirect (302) easily unless sent via text/plain to avoid preflight OPTIONS.
+          await fetch(finalApiUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'text/plain',
+            },
+            body: JSON.stringify({ email: email.trim() }),
+          });
+        } else {
+          const response = await fetch(finalApiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email.trim() }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
         }
 
         setSubmitted(true);
@@ -45,7 +63,7 @@ export const Newsletter: React.FC = () => {
       }
     } else {
       // Simulation for development
-      console.warn('VITE_NEWSLETTER_API_URL environment variable is not defined. Simulating submission.');
+      console.warn('Newsletter API URL is not defined. Simulating submission.');
       setTimeout(() => {
         setSubmitted(true);
         setLoading(false);

@@ -16,7 +16,8 @@ export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
   whatsappNumber: '+15551234567',
   whatsappMessageTemplate: '¡Hola equipo CRUNQI! Me gustaría realizar un pedido de los siguientes postres artesanales:\n\n{items}\n\nTotal: ${total}',
   instagramUrl: 'https://instagram.com/crunqi',
-  facebookUrl: 'https://facebook.com/crunqi'
+  facebookUrl: 'https://facebook.com/crunqi',
+  newsletterApiUrl: ''
 };
 
 

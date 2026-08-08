@@ -233,7 +233,7 @@ export default function App() {
         />
 
         {/* Newsletter Signup */}
-        <Newsletter />
+        <Newsletter apiUrl={themeSettings.newsletterApiUrl} />
 
       </main>
 

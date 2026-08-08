@@ -1054,6 +1054,22 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
                     <div>
                       <label className="text-xs font-bold uppercase tracking-wider text-[#26170c] block mb-1">
+                        URL de Google Sheets para Newsletter
+                      </label>
+                      <input
+                        type="text"
+                        value={themeSettings.newsletterApiUrl || ''}
+                        onChange={(e) => onUpdateThemeSettings({ ...themeSettings, newsletterApiUrl: e.target.value })}
+                        placeholder="https://script.google.com/macros/s/.../exec"
+                        className="w-full bg-[#fdf9f3] border border-[#39c0d3]/30 rounded-xl p-3 text-xs text-[#26170c] focus:ring-2 focus:ring-[#39c0d3] outline-none"
+                      />
+                      <p className="text-[10px] text-[#81756e] mt-1">
+                        Pega aquí la URL de la Web App generada en Google Apps Script para guardar los correos automáticamente.
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-wider text-[#26170c] block mb-1">
                         Plantilla de Mensaje Predeterminado
                       </label>
                       <textarea
